@@ -14,11 +14,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const backgroundEffect = document.getElementById('background-effect');
     const gameUI = document.getElementById('game-ui');
     const gameContainer = document.querySelector('.game-container');
+    const bossActionText = document.getElementById('boss-action-text'); // YENİ
 
     // --- Oyun Değişkenleri ---
     let bakiye = 22500;
     let atlananKartSayisi = 0;
-    let oyunAktif = false;
+    let oyunAktif = false; 
     let bossSavasinda = false;
     let kartPuanlandi = false;
     let mevcutBossSira = 0;
@@ -45,6 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function gosterMesaj(mesaj, renk = '#ffffff', sure = 2000) {
+        // ... (Bu fonksiyon aynı) ...
         const mesajElementi = document.createElement('p');
         mesajElementi.textContent = mesaj;
         mesajElementi.className = 'notification-text';
@@ -67,21 +69,19 @@ document.addEventListener('DOMContentLoaded', function() {
         clearInterval(oyunDongusu);
         obstacle.style.animationPlayState = 'paused';
         backgroundEffect.style.animationPlayState = 'paused';
+        bossActionText.classList.add('hidden'); // YENİ: Oyun bitince uyarıyı gizle
         
-        // Eğer yakalanma ile oyun bittiyse, önce boss'un yapışma animasyonu çalışsın
         if (yakalanmaMi) {
             const bossEl = document.getElementById('boss');
             if (bossEl) {
                 bossEl.style.transition = 'left 0.2s ease-in';
                 bossEl.style.left = (dino.offsetLeft + 10) + 'px';
             }
-            // Animasyon bittikten sonra mesajı göster ve butonu çıkar
             setTimeout(() => {
                 gosterMesaj("YAKALANDIN!", '#ff4d4d', 5000);
                 restartButton.style.display = 'block';
             }, 300);
         } else {
-            // Diğer bitiş senaryoları (iflas veya zafer)
             restartButton.style.display = 'block';
             if (kazandinMi) {
                 gosterMesaj("MAAŞ GÜNÜ!", '#4CAF50', 5000);
@@ -99,28 +99,29 @@ document.addEventListener('DOMContentLoaded', function() {
         dino.classList.add('dino-boss-position');
         obstacle.style.display = 'none';
         gosterMesaj(`${aktifBoss.ad} Geliyor!`, '#ffc107');
+        
+        // YENİ: Uyarı metnini göster
+        bossActionText.textContent = "Zıpla! Zıpla!";
+        bossActionText.classList.remove('hidden');
+
         const bossElementi = document.createElement('div');
         bossElementi.id = 'boss';
         bossElementi.style.backgroundImage = `url('${aktifBoss.gorsel}')`;
         bossAlani.appendChild(bossElementi);
         setTimeout(() => { bossElementi.classList.add('boss-active-position'); }, 500);
 
-        // DÜZELTME: Yakalanma sayacını SADECE boss savaşı başladığında bir kere ayarlıyoruz.
-        // Zıplama eylemi bu sayacı sıfırlayacak.
         setBossTimer();
     }
     
-    // YENİ: Zamanlayıcıyı ayarlayan ayrı bir fonksiyon (daha temiz)
     function setBossTimer() {
-        // Önce eski zamanlayıcıyı her zaman temizle
         clearTimeout(bossYakalanmaTimer);
-        // Yeni zamanlayıcıyı ayarla
         bossYakalanmaTimer = setTimeout(() => {
-            oyunuBitir(false, true); // Yakalanarak oyunu bitir
-        }, 1000); // 1 saniye
+            oyunuBitir(false, true);
+        }, 1000);
     }
 
     function createParticle(type) {
+        // ... (Bu fonksiyon aynı) ...
         const particle = document.createElement('div');
         particle.className = `particle ${type}`;
         const randomX = (Math.random() - 0.5) * 250;
@@ -135,12 +136,11 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => { particle.remove(); }, 1000);
     }
 
-    // Hem zıplama hem tıklama için ortak eylem fonksiyonu
     function handlePlayerAction() {
         if (!oyunAktif) return;
         jump();
         if (bossSavasinda) {
-            setBossTimer(); // Her zıpladığında yakalanma sayacını sıfırla ve yeniden başlat
+            setBossTimer(); 
             let odemeMiktari = 50;
             if (bakiye >= odemeMiktari && aktifBoss.borc > 0) {
                 bakiye -= odemeMiktari;
@@ -151,6 +151,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (aktifBoss.borc <= 0) {
                     bossSavasinda = false;
                     clearTimeout(bossYakalanmaTimer);
+                    bossActionText.classList.add('hidden'); // YENİ: Boss yenilince uyarıyı gizle
                     mevcutBossSira++;
                     gosterMesaj("Borç Ödendi!", '#4CAF50');
                     bossAlani.innerHTML = '';
@@ -167,6 +168,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function oyunuBaslat() {
+        // ... (Bu fonksiyon aynı) ...
         introOverlay.style.opacity = '0';
         setTimeout(() => { introOverlay.style.display = 'none'; }, 500);
         gameUI.style.visibility = 'visible';
