@@ -1,0 +1,219 @@
+// YENİ VE EN ÖNEMLİ DÜZELTME: Tüm kodlar bu olay dinleyicisinin içinde çalışacak.
+// Bu, HTML'in tamamen yüklenmesini bekler ve 'null' hatasını %100 önler.
+document.addEventListener('DOMContentLoaded', function() {
+
+    // --- HTML'deki Elementleri Seçme ---
+    const dino = document.getElementById('dino');
+    const obstacle = document.getElementById('obstacle');
+    const oyunBilgisiEkrani = document.getElementById('oyun-bilgisi');
+    const gunSayaciEkrani = document.getElementById('gun-sayaci');
+    const bossAlani = document.getElementById('boss-alani');
+    const notificationArea = document.getElementById('notification-area');
+    const particleContainer = document.getElementById('particle-container');
+    const restartButton = document.getElementById('restart-button');
+    const introOverlay = document.getElementById('intro-overlay');
+    const startGameButton = document.getElementById('start-game-button');
+    const backgroundEffect = document.getElementById('background-effect');
+    const gameUI = document.getElementById('game-ui');
+
+    // --- Oyun Değişkenleri ---
+    let bakiye = 22500;
+    let atlananKartSayisi = 0;
+    let oyunAktif = false; // Oyun başlangıçta duruyor
+    let bossSavasinda = false;
+    let kartPuanlandi = false;
+    let mevcutBossSira = 0;
+    let aktifBoss = null;
+    const GEREKEN_TOPLAM_ATLAYIS = 40;
+    let bossYakalanmaTimer = null;
+    let oyunDongusu = null; // Oyun döngüsünü dışarıda tanımla
+
+    // --- Boss Bilgileri ---
+    const bosslar = [
+        { ad: "Manav", borc: 2000, gorsel: 'manav.png' },
+        { ad: "Kasap", borc: 3000, gorsel: 'kasap.png' },
+        { ad: "Bakkal", borc: 5000, gorsel: 'bakkal.png' },
+        { ad: "Enişte", borc: 10000, gorsel: 'eniste.png' }
+    ];
+
+    // --- Ana Fonksiyonlar ---
+    function guncelleEkrani() {
+        const gunOrani = 30 / GEREKEN_TOPLAM_ATLAYIS;
+        let kalanGun = 30 - Math.floor(atlananKartSayisi * gunOrani);
+        if (kalanGun < 0) kalanGun = 0;
+        oyunBilgisiEkrani.children[0].textContent = `Bakiye: ${bakiye.toFixed(2)} TL`;
+        gunSayaciEkrani.textContent = ` | Kalan Gün: ${kalanGun}`;
+    }
+
+    function gosterMesaj(mesaj, renk = '#ffffff', sure = 2000) {
+        // ... (Bu fonksiyon aynı)
+        const mesajElementi = document.createElement('p');
+        mesajElementi.textContent = mesaj;
+        mesajElementi.className = 'notification-text';
+        mesajElementi.style.color = renk;
+        notificationArea.innerHTML = '';
+        notificationArea.appendChild(mesajElementi);
+        setTimeout(() => { if (notificationArea.contains(mesajElementi)) { notificationArea.removeChild(mesajElementi); } }, sure);
+    }
+
+    function jump() {
+        if (!dino.classList.contains('jump-animation') && oyunAktif) {
+            dino.classList.add('jump-animation');
+            setTimeout(() => { dino.classList.remove('jump-animation'); }, 600);
+        }
+    }
+
+    function oyunuBitir(kazandinMi) {
+        oyunAktif = false;
+        clearTimeout(bossYakalanmaTimer);
+        clearInterval(oyunDongusu); // Oyun döngüsünü durdur
+        obstacle.style.animationPlayState = 'paused';
+        backgroundEffect.style.animationPlayState = 'paused';
+        restartButton.style.display = 'block';
+        if (kazandinMi) {
+            gosterMesaj("MAAŞ GÜNÜ!", '#4CAF50', 5000);
+        } else {
+            gosterMesaj("YAKALANDIN!", '#ff4d4d', 5000);
+        }
+    }
+
+    function bossuGetir() {
+        if (mevcutBossSira >= bosslar.length) return;
+        bossSavasinda = true;
+        const bossSablonu = bosslar[mevcutBossSira];
+        aktifBoss = { ...bossSablonu };
+        dino.classList.add('dino-boss-position');
+        obstacle.style.display = 'none';
+        gosterMesaj(`${aktifBoss.ad} Geliyor!`, '#ffc107');
+        const bossElementi = document.createElement('div');
+        bossElementi.id = 'boss';
+        bossElementi.style.backgroundImage = `url('${aktifBoss.gorsel}')`;
+        bossAlani.appendChild(bossElementi);
+        setTimeout(() => { bossElementi.classList.add('boss-active-position'); }, 500);
+
+        bossYakalanmaTimer = setTimeout(() => {
+            const bossEl = document.getElementById('boss');
+            if (bossEl) {
+                bossEl.style.transition = 'left 0.2s ease-in';
+                bossEl.style.left = (dino.offsetLeft + 10) + 'px';
+            }
+            setTimeout(() => { oyunuBitir(false); }, 300);
+        }, 1000);
+    }
+
+    function createParticle(type) {
+        // ... (Bu fonksiyon aynı)
+        const particle = document.createElement('div');
+        particle.className = `particle ${type}`;
+        const randomX = (Math.random() - 0.5) * 250;
+        const randomY = (Math.random() * 80) + 20;
+        const randomRot = (Math.random() - 0.5) * 720;
+        particle.style.setProperty('--end-x', randomX + 'px');
+        particle.style.setProperty('--end-y', randomY + 'px');
+        particle.style.setProperty('--end-rot', randomRot + 'deg');
+        particle.style.left = (dino.offsetLeft + 20) + 'px';
+        particle.style.top = (dino.offsetTop + 40) + 'px';
+        particleContainer.appendChild(particle);
+        setTimeout(() => { particle.remove(); }, 1000);
+    }
+
+    function oyunuBaslat() {
+        // Giriş ekranını karartarak kaldır
+        introOverlay.style.opacity = '0';
+        setTimeout(() => {
+            introOverlay.style.display = 'none';
+        }, 500);
+
+        // Oyun arayüzünü görünür yap
+        gameUI.style.visibility = 'visible';
+
+        // Animasyonları başlat
+        obstacle.classList.remove('paused-animation');
+        backgroundEffect.classList.remove('paused-animation');
+
+        oyunAktif = true;
+        gosterMesaj("Maaş Yattı: 22500 TL", '#4CAF50');
+        guncelleEkrani();
+
+        // Oyun döngüsünü şimdi başlat
+        oyunDongusu = setInterval(function() {
+            if (!oyunAktif) return;
+            let dinoTop = parseInt(window.getComputedStyle(dino).getPropertyValue('top'));
+            let obstacleLeft = parseInt(window.getComputedStyle(obstacle).getPropertyValue('left'));
+
+            if (obstacleLeft < 110 && obstacleLeft > 50 && dinoTop >= 170) {
+                bakiye -= 500;
+                createParticle('coin');
+                guncelleEkrani();
+                gosterMesaj("-500 TL Ceza!", '#ff4d4d', 1000);
+                obstacle.style.display = 'none';
+                setTimeout(() => { obstacle.style.display = 'block'; }, 500);
+                if (bakiye < 0) { oyunuBitir(false); }
+            }
+            
+            if (obstacleLeft < 50 && !kartPuanlandi) {
+                kartPuanlandi = true;
+                if (!bossSavasinda) {
+                    atlananKartSayisi++;
+                    guncelleEkrani();
+                    if (atlananKartSayisi > 0 && atlananKartSayisi % 10 === 0) {
+                        bossuGetir();
+                    }
+                }
+            }
+        }, 20);
+    }
+
+
+    // --- Olay Dinleyicileri ---
+    obstacle.addEventListener('animationiteration', () => {
+        kartPuanlandi = false;
+    });
+
+    document.addEventListener('keydown', function(event) {
+        if (event.code === 'Space' && oyunAktif) {
+            jump();
+            if (bossSavasinda) {
+                clearTimeout(bossYakalanmaTimer);
+                bossYakalanmaTimer = setTimeout(() => {
+                    const bossEl = document.getElementById('boss');
+                    if (bossEl) {
+                        bossEl.style.transition = 'left 0.2s ease-in';
+                        bossEl.style.left = (dino.offsetLeft + 10) + 'px';
+                    }
+                    setTimeout(() => { oyunuBitir(false); }, 300);
+                }, 1000);
+
+                let odemeMiktari = 50;
+                if (bakiye >= odemeMiktari && aktifBoss.borc > 0) {
+                    bakiye -= odemeMiktari;
+                    aktifBoss.borc -= odemeMiktari;
+                    guncelleEkrani();
+                    createParticle('banknote');
+
+                    if (aktifBoss.borc <= 0) {
+                        bossSavasinda = false;
+                        clearTimeout(bossYakalanmaTimer);
+                        mevcutBossSira++;
+                        gosterMesaj("Borç Ödendi!", '#4CAF50');
+                        bossAlani.innerHTML = '';
+                        dino.classList.remove('dino-boss-position');
+                        obstacle.style.display = 'block';
+                        if (mevcutBossSira >= bosslar.length) {
+                            oyunuBitir(true);
+                        }
+                    }
+                } else if (bakiye < odemeMiktari) {
+                    gosterMesaj("Yetersiz Bakiye! Ay sonu gelmedi dostum", '#ff4d4d');
+                }
+            }
+        }
+    });
+
+    restartButton.addEventListener('click', function() {
+        location.reload();
+    });
+
+    startGameButton.addEventListener('click', oyunuBaslat);
+
+}); // DOMContentLoaded olayının sonu

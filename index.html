@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Borçtan Kaçış: Maaş Günü</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="intro-overlay">
+        <div class="intro-content">
+            <h1>Borçtan Kaçış</h1>
+            <p>
+                Kahramanımız Hüseyin... Türkiye şartlarında asgari ücret ile ayın sonunu getirmeye çalışıyor. 
+                Bunu yaparken de kredi kartları ve peşini bırakmayan borçlulardan kaçmak zorunda.
+            </p>
+            <p class="call-to-action">
+                Hadi bu sabit gelirli arkadaşımızı bir sonraki maaş gününe ulaştıralım!
+            </p>
+            <button id="start-game-button">Oyuna Başla</button>
+        </div>
+    </div>
+
+
+    <div class="game-container">
+        <div id="background-effect" class="paused-animation"></div>
+        <div id="dino"></div>
+        <div id="obstacle" class="paused-animation"></div>
+        <div id="boss-alani"></div>
+        <div id="particle-container"></div>
+        <div id="notification-area"></div>
+    </div>
+    
+    <div id="game-ui" style="visibility: hidden;"> <div id="oyun-bilgisi">
+            <span>Bakiye: 22500.00 TL</span>
+            <span id="gun-sayaci"> | Kalan Gün: 30</span>
+        </div>
+        <p>Zıplamak için Boşluk (Space) tuşuna basın</p>
+    </div>
+    
+    <button id="restart-button" style="display: none;">Yeniden Başlat</button>
+
+    <script src="script.js"></script>
+</body>
+</html>
