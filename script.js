@@ -1,5 +1,3 @@
-// YENİ VE EN ÖNEMLİ DÜZELTME: Tüm kodlar bu olay dinleyicisinin içinde çalışacak.
-// Bu, HTML'in tamamen yüklenmesini bekler ve 'null' hatasını %100 önler.
 document.addEventListener('DOMContentLoaded', function() {
 
     // --- HTML'deki Elementleri Seçme ---
@@ -15,18 +13,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const startGameButton = document.getElementById('start-game-button');
     const backgroundEffect = document.getElementById('background-effect');
     const gameUI = document.getElementById('game-ui');
+    const gameContainer = document.querySelector('.game-container'); // Tıklama için oyun alanını seç
 
     // --- Oyun Değişkenleri ---
     let bakiye = 22500;
     let atlananKartSayisi = 0;
-    let oyunAktif = false; // Oyun başlangıçta duruyor
+    let oyunAktif = false;
     let bossSavasinda = false;
     let kartPuanlandi = false;
     let mevcutBossSira = 0;
     let aktifBoss = null;
     const GEREKEN_TOPLAM_ATLAYIS = 40;
     let bossYakalanmaTimer = null;
-    let oyunDongusu = null; // Oyun döngüsünü dışarıda tanımla
+    let oyunDongusu = null;
 
     // --- Boss Bilgileri ---
     const bosslar = [
@@ -45,102 +44,68 @@ document.addEventListener('DOMContentLoaded', function() {
         gunSayaciEkrani.textContent = ` | Kalan Gün: ${kalanGun}`;
     }
 
-    function gosterMesaj(mesaj, renk = '#ffffff', sure = 2000) {
-        // ... (Bu fonksiyon aynı)
-        const mesajElementi = document.createElement('p');
-        mesajElementi.textContent = mesaj;
-        mesajElementi.className = 'notification-text';
-        mesajElementi.style.color = renk;
-        notificationArea.innerHTML = '';
-        notificationArea.appendChild(mesajElementi);
-        setTimeout(() => { if (notificationArea.contains(mesajElementi)) { notificationArea.removeChild(mesajElementi); } }, sure);
-    }
+    // ... gosterMesaj, jump, oyunuBitir, bossuGetir, createParticle fonksiyonları aynı ...
+    function gosterMesaj(mesaj, renk = '#ffffff', sure = 2000) { const mesajElementi = document.createElement('p'); mesajElementi.textContent = mesaj; mesajElementi.className = 'notification-text'; mesajElementi.style.color = renk; notificationArea.innerHTML = ''; notificationArea.appendChild(mesajElementi); setTimeout(() => { if (notificationArea.contains(mesajElementi)) { notificationArea.removeChild(mesajElementi); } }, sure); }
+    function jump() { if (!dino.classList.contains('jump-animation') && oyunAktif) { dino.classList.add('jump-animation'); setTimeout(() => { dino.classList.remove('jump-animation'); }, 600); } }
+    function oyunuBitir(kazandinMi) { oyunAktif = false; clearTimeout(bossYakalanmaTimer); clearInterval(oyunDongusu); obstacle.style.animationPlayState = 'paused'; backgroundEffect.style.animationPlayState = 'paused'; restartButton.style.display = 'block'; if (kazandinMi) { gosterMesaj("MAAŞ GÜNÜ!", '#4CAF50', 5000); } else { gosterMesaj("YAKALANDIN!", '#ff4d4d', 5000); } }
+    function bossuGetir() { if (mevcutBossSira >= bosslar.length) return; bossSavasinda = true; const bossSablonu = bosslar[mevcutBossSira]; aktifBoss = { ...bossSablonu }; dino.classList.add('dino-boss-position'); obstacle.style.display = 'none'; gosterMesaj(`${aktifBoss.ad} Geliyor!`, '#ffc107'); const bossElementi = document.createElement('div'); bossElementi.id = 'boss'; bossElementi.style.backgroundImage = `url('${aktifBoss.gorsel}')`; bossAlani.appendChild(bossElementi); setTimeout(() => { bossElementi.classList.add('boss-active-position'); }, 500); bossYakalanmaTimer = setTimeout(() => { const bossEl = document.getElementById('boss'); if (bossEl) { bossEl.style.transition = 'left 0.2s ease-in'; bossEl.style.left = (dino.offsetLeft + 10) + 'px'; } setTimeout(() => { oyunuBitir(false); }, 300); }, 1000); }
+    function createParticle(type) { const particle = document.createElement('div'); particle.className = `particle ${type}`; const randomX = (Math.random() - 0.5) * 250; const randomY = (Math.random() * 80) + 20; const randomRot = (Math.random() - 0.5) * 720; particle.style.setProperty('--end-x', randomX + 'px'); particle.style.setProperty('--end-y', randomY + 'px'); particle.style.setProperty('--end-rot', randomRot + 'deg'); particle.style.left = (dino.offsetLeft + 20) + 'px'; particle.style.top = (dino.offsetTop + 40) + 'px'; particleContainer.appendChild(particle); setTimeout(() => { particle.remove(); }, 1000); }
+    
+    // YENİ: Hem zıplama hem tıklama için ortak eylem fonksiyonu
+    function handlePlayerAction() {
+        if (!oyunAktif) return;
 
-    function jump() {
-        if (!dino.classList.contains('jump-animation') && oyunAktif) {
-            dino.classList.add('jump-animation');
-            setTimeout(() => { dino.classList.remove('jump-animation'); }, 600);
-        }
-    }
+        jump();
+        
+        if (bossSavasinda) {
+            clearTimeout(bossYakalanmaTimer);
+            bossYakalanmaTimer = setTimeout(() => {
+                const bossEl = document.getElementById('boss');
+                if (bossEl) {
+                    bossEl.style.transition = 'left 0.2s ease-in';
+                    bossEl.style.left = (dino.offsetLeft + 10) + 'px';
+                }
+                setTimeout(() => { oyunuBitir(false); }, 300);
+            }, 1000);
 
-    function oyunuBitir(kazandinMi) {
-        oyunAktif = false;
-        clearTimeout(bossYakalanmaTimer);
-        clearInterval(oyunDongusu); // Oyun döngüsünü durdur
-        obstacle.style.animationPlayState = 'paused';
-        backgroundEffect.style.animationPlayState = 'paused';
-        restartButton.style.display = 'block';
-        if (kazandinMi) {
-            gosterMesaj("MAAŞ GÜNÜ!", '#4CAF50', 5000);
-        } else {
-            gosterMesaj("YAKALANDIN!", '#ff4d4d', 5000);
-        }
-    }
+            let odemeMiktari = 50;
+            if (bakiye >= odemeMiktari && aktifBoss.borc > 0) {
+                bakiye -= odemeMiktari;
+                aktifBoss.borc -= odemeMiktari;
+                guncelleEkrani();
+                createParticle('banknote');
 
-    function bossuGetir() {
-        if (mevcutBossSira >= bosslar.length) return;
-        bossSavasinda = true;
-        const bossSablonu = bosslar[mevcutBossSira];
-        aktifBoss = { ...bossSablonu };
-        dino.classList.add('dino-boss-position');
-        obstacle.style.display = 'none';
-        gosterMesaj(`${aktifBoss.ad} Geliyor!`, '#ffc107');
-        const bossElementi = document.createElement('div');
-        bossElementi.id = 'boss';
-        bossElementi.style.backgroundImage = `url('${aktifBoss.gorsel}')`;
-        bossAlani.appendChild(bossElementi);
-        setTimeout(() => { bossElementi.classList.add('boss-active-position'); }, 500);
-
-        bossYakalanmaTimer = setTimeout(() => {
-            const bossEl = document.getElementById('boss');
-            if (bossEl) {
-                bossEl.style.transition = 'left 0.2s ease-in';
-                bossEl.style.left = (dino.offsetLeft + 10) + 'px';
+                if (aktifBoss.borc <= 0) {
+                    bossSavasinda = false;
+                    clearTimeout(bossYakalanmaTimer);
+                    mevcutBossSira++;
+                    gosterMesaj("Borç Ödendi!", '#4CAF50');
+                    bossAlani.innerHTML = '';
+                    dino.classList.remove('dino-boss-position');
+                    obstacle.style.display = 'block';
+                    if (mevcutBossSira >= bosslar.length) {
+                        oyunuBitir(true);
+                    }
+                }
+            } else if (bakiye < odemeMiktari) {
+                gosterMesaj("Yetersiz Bakiye! Ay sonu gelmedi dostum", '#ff4d4d');
             }
-            setTimeout(() => { oyunuBitir(false); }, 300);
-        }, 1000);
-    }
-
-    function createParticle(type) {
-        // ... (Bu fonksiyon aynı)
-        const particle = document.createElement('div');
-        particle.className = `particle ${type}`;
-        const randomX = (Math.random() - 0.5) * 250;
-        const randomY = (Math.random() * 80) + 20;
-        const randomRot = (Math.random() - 0.5) * 720;
-        particle.style.setProperty('--end-x', randomX + 'px');
-        particle.style.setProperty('--end-y', randomY + 'px');
-        particle.style.setProperty('--end-rot', randomRot + 'deg');
-        particle.style.left = (dino.offsetLeft + 20) + 'px';
-        particle.style.top = (dino.offsetTop + 40) + 'px';
-        particleContainer.appendChild(particle);
-        setTimeout(() => { particle.remove(); }, 1000);
+        }
     }
 
     function oyunuBaslat() {
-        // Giriş ekranını karartarak kaldır
         introOverlay.style.opacity = '0';
-        setTimeout(() => {
-            introOverlay.style.display = 'none';
-        }, 500);
-
-        // Oyun arayüzünü görünür yap
+        setTimeout(() => { introOverlay.style.display = 'none'; }, 500);
         gameUI.style.visibility = 'visible';
-
-        // Animasyonları başlat
         obstacle.classList.remove('paused-animation');
         backgroundEffect.classList.remove('paused-animation');
-
         oyunAktif = true;
         gosterMesaj("Maaş Yattı: 22500 TL", '#4CAF50');
         guncelleEkrani();
-
-        // Oyun döngüsünü şimdi başlat
         oyunDongusu = setInterval(function() {
             if (!oyunAktif) return;
             let dinoTop = parseInt(window.getComputedStyle(dino).getPropertyValue('top'));
             let obstacleLeft = parseInt(window.getComputedStyle(obstacle).getPropertyValue('left'));
-
             if (obstacleLeft < 110 && obstacleLeft > 50 && dinoTop >= 170) {
                 bakiye -= 500;
                 createParticle('coin');
@@ -150,7 +115,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 setTimeout(() => { obstacle.style.display = 'block'; }, 500);
                 if (bakiye < 0) { oyunuBitir(false); }
             }
-            
             if (obstacleLeft < 50 && !kartPuanlandi) {
                 kartPuanlandi = true;
                 if (!bossSavasinda) {
@@ -164,56 +128,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 20);
     }
 
-
     // --- Olay Dinleyicileri ---
     obstacle.addEventListener('animationiteration', () => {
         kartPuanlandi = false;
     });
 
+    // Space tuşunu dinle
     document.addEventListener('keydown', function(event) {
-        if (event.code === 'Space' && oyunAktif) {
-            jump();
-            if (bossSavasinda) {
-                clearTimeout(bossYakalanmaTimer);
-                bossYakalanmaTimer = setTimeout(() => {
-                    const bossEl = document.getElementById('boss');
-                    if (bossEl) {
-                        bossEl.style.transition = 'left 0.2s ease-in';
-                        bossEl.style.left = (dino.offsetLeft + 10) + 'px';
-                    }
-                    setTimeout(() => { oyunuBitir(false); }, 300);
-                }, 1000);
-
-                let odemeMiktari = 50;
-                if (bakiye >= odemeMiktari && aktifBoss.borc > 0) {
-                    bakiye -= odemeMiktari;
-                    aktifBoss.borc -= odemeMiktari;
-                    guncelleEkrani();
-                    createParticle('banknote');
-
-                    if (aktifBoss.borc <= 0) {
-                        bossSavasinda = false;
-                        clearTimeout(bossYakalanmaTimer);
-                        mevcutBossSira++;
-                        gosterMesaj("Borç Ödendi!", '#4CAF50');
-                        bossAlani.innerHTML = '';
-                        dino.classList.remove('dino-boss-position');
-                        obstacle.style.display = 'block';
-                        if (mevcutBossSira >= bosslar.length) {
-                            oyunuBitir(true);
-                        }
-                    }
-                } else if (bakiye < odemeMiktari) {
-                    gosterMesaj("Yetersiz Bakiye! Ay sonu gelmedi dostum", '#ff4d4d');
-                }
-            }
+        if (event.code === 'Space') {
+            handlePlayerAction();
         }
     });
 
+    // YENİ: Tıklama / Dokunmayı dinle
+    gameContainer.addEventListener('click', handlePlayerAction);
+    
     restartButton.addEventListener('click', function() {
         location.reload();
     });
 
     startGameButton.addEventListener('click', oyunuBaslat);
 
-}); // DOMContentLoaded olayının sonu
+});
