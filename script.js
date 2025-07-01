@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- Oyun Değişkenleri ---
     let bakiye = 22500;
     let atlananKartSayisi = 0;
-    let oyunAktif = false; 
+    let oyunAktif = false;
     let bossSavasinda = false;
     let kartPuanlandi = false;
     let mevcutBossSira = 0;
@@ -61,17 +61,33 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function oyunuBitir(kazandinMi) {
+    function oyunuBitir(kazandinMi, yakalanmaMi = false) {
         oyunAktif = false;
         clearTimeout(bossYakalanmaTimer);
         clearInterval(oyunDongusu);
         obstacle.style.animationPlayState = 'paused';
         backgroundEffect.style.animationPlayState = 'paused';
-        restartButton.style.display = 'block';
-        if (kazandinMi) {
-            gosterMesaj("MAAŞ GÜNÜ!", '#4CAF50', 5000);
+        
+        // Eğer yakalanma ile oyun bittiyse, önce boss'un yapışma animasyonu çalışsın
+        if (yakalanmaMi) {
+            const bossEl = document.getElementById('boss');
+            if (bossEl) {
+                bossEl.style.transition = 'left 0.2s ease-in';
+                bossEl.style.left = (dino.offsetLeft + 10) + 'px';
+            }
+            // Animasyon bittikten sonra mesajı göster ve butonu çıkar
+            setTimeout(() => {
+                gosterMesaj("YAKALANDIN!", '#ff4d4d', 5000);
+                restartButton.style.display = 'block';
+            }, 300);
         } else {
-            gosterMesaj("YAKALANDIN!", '#ff4d4d', 5000);
+            // Diğer bitiş senaryoları (iflas veya zafer)
+            restartButton.style.display = 'block';
+            if (kazandinMi) {
+                gosterMesaj("MAAŞ GÜNÜ!", '#4CAF50', 5000);
+            } else {
+                gosterMesaj("İFLAS ETTİN!", '#ff4d4d', 5000);
+            }
         }
     }
 
@@ -89,14 +105,19 @@ document.addEventListener('DOMContentLoaded', function() {
         bossAlani.appendChild(bossElementi);
         setTimeout(() => { bossElementi.classList.add('boss-active-position'); }, 500);
 
+        // DÜZELTME: Yakalanma sayacını SADECE boss savaşı başladığında bir kere ayarlıyoruz.
+        // Zıplama eylemi bu sayacı sıfırlayacak.
+        setBossTimer();
+    }
+    
+    // YENİ: Zamanlayıcıyı ayarlayan ayrı bir fonksiyon (daha temiz)
+    function setBossTimer() {
+        // Önce eski zamanlayıcıyı her zaman temizle
+        clearTimeout(bossYakalanmaTimer);
+        // Yeni zamanlayıcıyı ayarla
         bossYakalanmaTimer = setTimeout(() => {
-            const bossEl = document.getElementById('boss');
-            if (bossEl) {
-                bossEl.style.transition = 'left 0.2s ease-in';
-                bossEl.style.left = (dino.offsetLeft + 10) + 'px';
-            }
-            setTimeout(() => { oyunuBitir(false); }, 300);
-        }, 1000);
+            oyunuBitir(false, true); // Yakalanarak oyunu bitir
+        }, 1000); // 1 saniye
     }
 
     function createParticle(type) {
@@ -114,19 +135,46 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => { particle.remove(); }, 1000);
     }
 
+    // Hem zıplama hem tıklama için ortak eylem fonksiyonu
+    function handlePlayerAction() {
+        if (!oyunAktif) return;
+        jump();
+        if (bossSavasinda) {
+            setBossTimer(); // Her zıpladığında yakalanma sayacını sıfırla ve yeniden başlat
+            let odemeMiktari = 50;
+            if (bakiye >= odemeMiktari && aktifBoss.borc > 0) {
+                bakiye -= odemeMiktari;
+                aktifBoss.borc -= odemeMiktari;
+                guncelleEkrani();
+                createParticle('banknote');
+
+                if (aktifBoss.borc <= 0) {
+                    bossSavasinda = false;
+                    clearTimeout(bossYakalanmaTimer);
+                    mevcutBossSira++;
+                    gosterMesaj("Borç Ödendi!", '#4CAF50');
+                    bossAlani.innerHTML = '';
+                    dino.classList.remove('dino-boss-position');
+                    obstacle.style.display = 'block';
+                    if (mevcutBossSira >= bosslar.length) {
+                        oyunuBitir(true);
+                    }
+                }
+            } else if (bakiye < odemeMiktari) {
+                gosterMesaj("Yetersiz Bakiye! Ay sonu gelmedi dostum", '#ff4d4d');
+            }
+        }
+    }
+
     function oyunuBaslat() {
         introOverlay.style.opacity = '0';
-        setTimeout(() => {
-            introOverlay.style.display = 'none';
-        }, 500);
-
+        setTimeout(() => { introOverlay.style.display = 'none'; }, 500);
         gameUI.style.visibility = 'visible';
         obstacle.classList.remove('paused-animation');
         backgroundEffect.classList.remove('paused-animation');
         oyunAktif = true;
         gosterMesaj("Maaş Yattı: 22500 TL", '#4CAF50');
         guncelleEkrani();
-        
         oyunDongusu = setInterval(function() {
             if (!oyunAktif) return;
             let dinoTop = parseInt(window.getComputedStyle(dino).getPropertyValue('top'));
@@ -151,43 +199,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         }, 20);
-    }
-
-    function handlePlayerAction() {
-        if (!oyunAktif) return;
-        jump();
-        if (bossSavasinda) {
-            clearTimeout(bossYakalanmaTimer);
-            bossYakalanmaTimer = setTimeout(() => {
-                const bossEl = document.getElementById('boss');
-                if (bossEl) {
-                    bossEl.style.transition = 'left 0.2s ease-in';
-                    bossEl.style.left = (dino.offsetLeft + 10) + 'px';
-                }
-                setTimeout(() => { oyunuBitir(false); }, 300);
-            }, 1000);
-            let odemeMiktari = 50;
-            if (bakiye >= odemeMiktari && aktifBoss.borc > 0) {
-                bakiye -= odemeMiktari;
-                aktifBoss.borc -= odemeMiktari;
-                guncelleEkrani();
-                createParticle('banknote');
-                if (aktifBoss.borc <= 0) {
-                    bossSavasinda = false;
-                    clearTimeout(bossYakalanmaTimer);
-                    mevcutBossSira++;
-                    gosterMesaj("Borç Ödendi!", '#4CAF50');
-                    bossAlani.innerHTML = '';
-                    dino.classList.remove('dino-boss-position');
-                    obstacle.style.display = 'block';
-                    if (mevcutBossSira >= bosslar.length) {
-                        oyunuBitir(true);
-                    }
-                }
-            } else if (bakiye < odemeMiktari) {
-                gosterMesaj("Yetersiz Bakiye! Ay sonu gelmedi dostum", '#ff4d4d');
-            }
-        }
     }
 
     // --- Olay Dinleyicileri ---
