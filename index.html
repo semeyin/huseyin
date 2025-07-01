@@ -10,18 +10,20 @@
 
     <div id="intro-overlay">
         <div class="intro-content">
-            <h1>Borçtan Kaçış</h1>
-            <p>
-                Kahramanımız Hüseyin... Türkiye şartlarında asgari ücret ile ayın sonunu getirmeye çalışıyor. 
-                Bunu yaparken de kredi kartları ve peşini bırakmayan borçlulardan kaçmak zorunda.
-            </p>
-            <p class="call-to-action">
-                Hadi bu sabit gelirli arkadaşımızı bir sonraki maaş gününe ulaştıralım!
-            </p>
-            <button id="start-game-button">Oyuna Başla</button>
+            <img src="huseyin_portre.png" alt="Hüseyin Portre" class="intro-character-image">
+            <div class="intro-text-container">
+                <h1 class="intro-line intro-line-1">Borçtan Kaçış</h1>
+                <p class="intro-line intro-line-2">
+                    Kahramanımız Hüseyin... Türkiye şartlarında asgari ücret ile ayın sonunu getirmeye çalışıyor. 
+                    Bunu yaparken de kredi kartları ve peşini bırakmayan borçlulardan kaçmak zorunda.
+                </p>
+                <p class="intro-line intro-line-3 call-to-action">
+                    Hadi bu sabit gelirli arkadaşımızı bir sonraki maaş gününe ulaştıralım!
+                </p>
+            </div>
         </div>
+        <button id="start-game-button" class="intro-line intro-line-4">Oyuna Başla</button>
     </div>
-
 
     <div class="game-container">
         <div id="background-effect" class="paused-animation"></div>
@@ -32,11 +34,12 @@
         <div id="notification-area"></div>
     </div>
     
-    <div id="game-ui" style="visibility: hidden;"> <div id="oyun-bilgisi">
+    <div id="game-ui" style="visibility: hidden;">
+        <div id="oyun-bilgisi">
             <span>Bakiye: 22500.00 TL</span>
             <span id="gun-sayaci"> | Kalan Gün: 30</span>
         </div>
-        <p>Zıplamak için Boşluk (Space) tuşuna basın</p>
+        <p>Zıplamak için Ekrana DOKUN veya SPACE Tuşuna Bas</p>
     </div>
     
     <button id="restart-button" style="display: none;">Yeniden Başlat</button>
