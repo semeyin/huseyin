@@ -1282,7 +1282,7 @@ const db = getFirestore(app);
  * 🛡️ ANTI-THEFT (HIRSIZLIK ÖNLEYİCİ) GÜVENLİK KALKANI
  * =========================================================================
  */
-(function initSecurityShield() {
+//(function initSecurityShield() {
     document.addEventListener('contextmenu', e => {
         if (!e.target.closest('input') && !e.target.closest('textarea') && !e.target.closest('#editableDocument')) {
             e.preventDefault();
@@ -2672,3 +2672,4 @@ window.App.init();
 </script>
 </body>
 </html>
+
