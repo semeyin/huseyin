@@ -1282,14 +1282,14 @@ const db = getFirestore(app);
  * 🛡️ ANTI-THEFT (HIRSIZLIK ÖNLEYİCİ) GÜVENLİK KALKANI
  * =========================================================================
  */
-//(function initSecurityShield() {
+(function initSecurityShield() {
     document.addEventListener('contextmenu', e => {
         if (!e.target.closest('input') && !e.target.closest('textarea') && !e.target.closest('#editableDocument')) {
             e.preventDefault();
         }
     });
 
-    /*document.addEventListener('keydown', e => {
+    document.addEventListener('keydown', e => {
         if (e.key === 'F12' || 
            (e.ctrlKey && e.shiftKey && ['I','J','C','i','j','c'].includes(e.key)) || 
            (e.ctrlKey && ['U','S','u','s'].includes(e.key))) { 
@@ -2672,5 +2672,3 @@ window.App.init();
 </script>
 </body>
 </html>
-
-
