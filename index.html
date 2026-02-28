@@ -1,51 +1,2674 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Borçtan Kaçış: Maaş Günü</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>İnfazmatik</title>
+  <style>
+    :root {
+      --primary: #0f172a; 
+      --secondary: #334155; 
+      --accent: #2563eb;
+      --success: #16a34a; 
+      --warning: #d97706; 
+      --danger: #dc2626;
+      --purple: #7c3aed; 
+      --light: #f1f5f9; 
+      --border: #e2e8f0;
+      --radius: 12px;
+    }
+
+    * { 
+      box-sizing: border-box; 
+      font-family: 'Inter', 'Segoe UI', sans-serif; 
+    }
+    
+    body { 
+      background-color: #f8fafc; 
+      color: var(--primary); 
+      margin: 0; 
+      padding: 20px; 
+      line-height: 1.6;
+      -webkit-user-select: none; 
+      -ms-user-select: none; 
+      user-select: none; 
+    }
+
+    input, select, textarea, [contenteditable="true"] {
+      -webkit-user-select: text; 
+      -ms-user-select: text; 
+      user-select: text;
+    }
+
+    .container { 
+      max-width: 1200px; 
+      margin: 0 auto; 
+      background: #fff; 
+      padding: 35px; 
+      border-radius: var(--radius); 
+      box-shadow: 0 15px 40px rgba(0,0,0,0.08); 
+      margin-bottom: 40px; 
+    }
+
+    header { 
+      border-bottom: 2px solid var(--light); 
+      margin-bottom: 30px; 
+      padding-bottom: 15px; 
+    }
+
+    header h1 { 
+      margin: 0; 
+      color: var(--primary); 
+      font-size: 1.9rem; 
+      letter-spacing: -1px; 
+    }
+
+    header p { 
+      margin: 5px 0 0; 
+      font-size: 0.95rem; 
+      color: #64748b; 
+    }
+    
+    .progress-container { 
+      display: flex; 
+      justify-content: space-between; 
+      margin-bottom: 40px; 
+      position: relative; 
+      max-width: 850px; 
+      margin-left: auto; 
+      margin-right: auto; 
+    }
+
+    .progress-line { 
+      position: absolute; 
+      top: 50%; 
+      left: 0; 
+      height: 3px; 
+      background: var(--light); 
+      width: 100%; 
+      z-index: 1; 
+      transform: translateY(-50%); 
+    }
+
+    .step-bubble { 
+      z-index: 2; 
+      width: 45px; 
+      height: 45px; 
+      background: #fff; 
+      border: 3px solid var(--light); 
+      border-radius: 50%; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      font-weight: 800; 
+      transition: 0.4s; 
+      color: #94a3b8; 
+      font-size: 1.1rem; 
+    }
+
+    .step-bubble.active { 
+      border-color: var(--accent); 
+      color: var(--accent); 
+      transform: scale(1.1); 
+      box-shadow: 0 0 20px rgba(37, 99, 235, 0.2); 
+    }
+
+    .step-bubble.completed { 
+      background: var(--accent); 
+      border-color: var(--accent); 
+      color: #fff; 
+    }
+    
+    .step-panel { 
+      display: none; 
+    }
+
+    .step-panel.active { 
+      display: block; 
+      animation: slideIn 0.35s ease-out; 
+    }
+
+    @keyframes slideIn { 
+      from { opacity: 0; transform: translateY(15px); } 
+      to { opacity: 1; transform: translateY(0); } 
+    }
+    
+    .form-grid { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); 
+      gap: 20px; 
+      margin-bottom: 25px; 
+    }
+
+    .form-group { 
+      display: flex; 
+      flex-direction: column; 
+    }
+
+    label { 
+      font-weight: 700; 
+      margin-bottom: 8px; 
+      font-size: 0.85rem; 
+      color: var(--secondary); 
+      text-transform: uppercase; 
+    }
+
+    input, select, textarea { 
+      padding: 12px; 
+      border: 2px solid var(--border); 
+      border-radius: 10px; 
+      outline: none; 
+      font-size: 1rem; 
+      transition: 0.2s; 
+      background: #fff; 
+    }
+
+    textarea { 
+      resize: vertical; 
+      min-height: 80px; 
+    }
+
+    input:focus, select:focus, textarea:focus { 
+      border-color: var(--accent); 
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); 
+    }
+    
+    /* Akıllı Tarih Kutuları (Date Triple) */
+    .date-triple { 
+      display: flex; 
+      gap: 8px; 
+      align-items: center; 
+      background: #fff; 
+    }
+
+    .date-triple input { 
+      text-align: center; 
+      padding: 12px 5px; 
+      -moz-appearance: textfield; 
+      font-weight: 700; 
+      font-size: 1.05rem; 
+    }
+
+    .date-triple input::-webkit-outer-spin-button, 
+    .date-triple input::-webkit-inner-spin-button { 
+      -webkit-appearance: none; 
+      margin: 0; 
+    }
+
+    .date-triple .dt-d, 
+    .date-triple .dt-m { 
+      flex: 1; 
+    }
+
+    .date-triple .dt-y { 
+      flex: 1.5; 
+    }
+
+    .dt-sep { 
+      color: #94a3b8; 
+      font-weight: 900; 
+      font-size: 1.2rem; 
+    }
+
+    .checkbox-group { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
+      gap: 12px; 
+      background: #f8fafc; 
+      padding: 25px; 
+      border-radius: var(--radius); 
+      border: 1px solid var(--border); 
+      margin-bottom: 20px; 
+    }
+
+    .checkbox-section-title { 
+      grid-column: 1 / -1; 
+      font-weight: 900; 
+      color: var(--primary); 
+      margin-top: 15px; 
+      margin-bottom: 5px; 
+      font-size: 1.1rem; 
+      border-bottom: 2px solid var(--border); 
+      padding-bottom: 5px; 
+    }
+
+    .checkbox-item { 
+      display: flex; 
+      align-items: flex-start; 
+      cursor: pointer; 
+      font-size: 0.95rem; 
+      padding: 12px; 
+      border-radius: 8px; 
+      transition: 0.2s; 
+      border: 1px solid var(--border); 
+      background: #fff; 
+    }
+
+    .checkbox-item:hover { 
+      border-color: var(--accent); 
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
+    }
+
+    .checkbox-item input { 
+      margin-top: 4px; 
+      margin-right: 15px; 
+      width: 22px; 
+      height: 22px; 
+      accent-color: var(--accent); 
+      cursor: pointer; 
+      flex-shrink: 0; 
+    }
+    
+    .mahsup-row { 
+      display: grid; 
+      grid-template-columns: 1fr 1fr auto; 
+      gap: 15px; 
+      align-items: end; 
+      margin-bottom: 15px; 
+      padding: 15px; 
+      background: #f1f5f9; 
+      border-radius: 10px; 
+      border: 1px dashed var(--border); 
+    }
+
+    .btn-remove { 
+      background: #fee2e2; 
+      color: #ef4444; 
+      border: none; 
+      width: 46px; 
+      height: 46px; 
+      border-radius: 10px; 
+      cursor: pointer; 
+      font-weight: bold; 
+      font-size: 1.4rem; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+    }
+    
+    .nav-btns { 
+      display: flex; 
+      justify-content: space-between; 
+      margin-top: 40px; 
+      padding-top: 25px; 
+      border-top: 2px solid var(--light); 
+    }
+
+    .btn { 
+      padding: 15px 35px; 
+      border: none; 
+      border-radius: 10px; 
+      cursor: pointer; 
+      font-weight: 800; 
+      transition: 0.3s; 
+      font-size: 1rem; 
+    }
+
+    .btn-primary { 
+      background: var(--accent); 
+      color: #fff; 
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); 
+    }
+
+    .btn-primary:hover { 
+      background: #1d4ed8; 
+      transform: translateY(-2px); 
+    }
+
+    .btn-secondary { 
+      background: #f1f5f9; 
+      color: var(--secondary); 
+    }
+
+    .btn-success { 
+      background: var(--success); 
+      color: #fff; 
+      margin-top: 15px; 
+      width: 100%; 
+      text-align: center; 
+    }
+
+    .btn-danger { 
+      background: #fee2e2; 
+      color: #ef4444; 
+      border: 1px solid #fca5a5; 
+      padding: 8px 15px; 
+    }
+
+    .btn:disabled { 
+      opacity: 0.4; 
+      cursor: not-allowed; 
+    }
+    
+    .tabs { 
+      display: flex; 
+      gap: 15px; 
+      border-bottom: 2px solid var(--light); 
+      margin-bottom: 30px; 
+    }
+
+    .tab-btn { 
+      padding: 14px 28px; 
+      cursor: pointer; 
+      border: none; 
+      background: none; 
+      font-weight: 800; 
+      color: #94a3b8; 
+      border-bottom: 4px solid transparent; 
+      transition: 0.3s; 
+      font-size: 1rem; 
+    }
+
+    .tab-btn.active { 
+      color: var(--accent); 
+      border-bottom-color: var(--accent); 
+    }
+
+    .tab-content { 
+      display: none; 
+    }
+
+    .tab-content.active { 
+      display: block; 
+    }
+    
+    .result-grid { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+      gap: 20px; 
+    }
+
+    .result-card { 
+      background: #fff; 
+      border: 2px solid var(--border); 
+      border-top-width: 6px; 
+      padding: 25px; 
+      border-radius: var(--radius); 
+      position: relative; 
+    }
+
+    .result-card.total { 
+      border-top-color: var(--primary); 
+      background: #f8fafc; 
+      grid-column: 1 / -1; 
+    }
+
+    .result-card.danger { border-top-color: var(--danger); }
+    .result-card.warning { border-top-color: var(--warning); }
+    .result-card.success { border-top-color: var(--success); }
+    .result-card.primary { border-top-color: var(--primary); }
+    .result-card.purple { border-top-color: var(--purple); }
+
+    .result-val { 
+      font-size: 1.7rem; 
+      font-weight: 900; 
+      color: var(--primary); 
+      margin-top: 8px; 
+    }
+
+    .result-card.purple .result-val {
+      color: var(--purple);
+    }
+
+    .result-sub { 
+      font-size: 0.85rem; 
+      color: #64748b; 
+      margin-top: 5px; 
+      font-weight: 600; 
+    }
+
+    .result-label { 
+      font-size: 0.85rem; 
+      font-weight: 800; 
+      text-transform: uppercase; 
+      color: #475569; 
+    }
+    
+    .option-grid { 
+      display: grid; 
+      grid-template-columns: 1fr; 
+      gap: 20px; 
+    }
+
+    .option-card { 
+      border: 2px solid var(--border); 
+      border-radius: var(--radius); 
+      padding: 25px; 
+      background: #fff; 
+      position: relative; 
+      transition: 0.3s; 
+    }
+
+    .option-card.eligible { 
+      border-left: 10px solid var(--success); 
+      box-shadow: 0 8px 20px rgba(22, 163, 74, 0.1); 
+    }
+
+    .option-card.not-eligible { 
+      border-left: 10px solid #cbd5e1; 
+      opacity: 0.85; 
+      background: #fcfcfc; 
+    }
+
+    .badge { 
+      position: absolute; 
+      top: 20px; 
+      right: 20px; 
+      padding: 8px 16px; 
+      border-radius: 30px; 
+      font-size: 0.8rem; 
+      font-weight: 900; 
+      text-transform: uppercase; 
+    }
+
+    .badge-success { background: #dcfce7; color: #166534; }
+    .badge-danger { background: #f1f5f9; color: #475569; }
+    
+    .info-box { 
+      font-size: 0.95rem; 
+      background: #eff6ff; 
+      border-radius: 10px; 
+      padding: 25px; 
+      margin-top: 25px; 
+      color: #1e40af; 
+      border: 1px solid #bfdbfe; 
+    }
+
+    .info-box ul { 
+      margin: 15px 0 0 25px; 
+      padding: 0; 
+    }
+
+    .info-box li { 
+      margin-bottom: 10px; 
+    }
+
+    .auth-tag { 
+      display: inline-flex; 
+      align-items: center; 
+      background: #f1f5f9; 
+      color: #475569; 
+      font-size: 0.8rem; 
+      padding: 6px 12px; 
+      border-radius: 6px; 
+      margin-top: 12px; 
+      font-weight: 800; 
+      border: 1px solid #cbd5e1; 
+    }
+    
+    .summary-list { 
+      display: flex; 
+      flex-direction: column; 
+      gap: 15px; 
+    }
+
+    .summary-card { 
+      background: #fff; 
+      border: 2px solid var(--border); 
+      border-left: 6px solid var(--accent); 
+      padding: 20px; 
+      border-radius: var(--radius); 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+    }
+
+    .summary-card-content h4 { 
+      margin: 0 0 5px 0; 
+      color: var(--primary); 
+    }
+
+    .summary-card-content p { 
+      margin: 0; 
+      color: #64748b; 
+      font-size: 0.9rem; 
+    }
+    
+    .modal-overlay { 
+      display: none; 
+      position: fixed; 
+      inset: 0; 
+      background: rgba(0,0,0,0.6); 
+      z-index: 1000; 
+      align-items: center; 
+      justify-content: center; 
+      backdrop-filter: blur(4px); 
+    }
+
+    .modal-overlay.active { 
+      display: flex; 
+      animation: fadeIn 0.2s ease-out; 
+    }
+
+    @keyframes fadeIn { 
+      from { opacity: 0; } 
+      to { opacity: 1; } 
+    }
+
+    .modal-content { 
+      background: #fff; 
+      width: 95%; 
+      max-width: 700px; 
+      padding: 30px; 
+      border-radius: var(--radius); 
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); 
+      max-height: 90vh; 
+      overflow-y: auto; 
+    }
+
+    .modal-header { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      border-bottom: 2px solid var(--light); 
+      padding-bottom: 15px; 
+      margin-bottom: 20px; 
+    }
+    
+    .print-area { 
+      display: none; 
+      background: #e2e8f0; 
+      min-height: 100vh; 
+      padding: 20px 0; 
+    }
+
+    .print-toolbar { 
+      background: var(--primary); 
+      padding: 15px; 
+      text-align: center; 
+      margin: 0 auto 20px auto; 
+      border-radius: 8px; 
+      max-width: 800px; 
+      display: flex; 
+      justify-content: center; 
+      gap: 15px; 
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+    }
+
+    .print-document { 
+      background: #fff; 
+      padding: 20mm; 
+      font-family: 'Times New Roman', Times, serif; 
+      color: #000; 
+      line-height: 1.5; 
+      font-size: 12pt; 
+      max-width: 800px; 
+      margin: 0 auto; 
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15); 
+      transition: box-shadow 0.3s; 
+    }
+
+    .print-document:focus { 
+      outline: none; 
+      box-shadow: 0 0 0 2px var(--success), 0 10px 30px rgba(0,0,0,0.15); 
+    }
+
+    .print-header { 
+      text-align: center; 
+      font-weight: bold; 
+      font-size: 14pt; 
+      margin-bottom: 30px; 
+      text-transform: uppercase; 
+    }
+
+    .editable-hint { 
+      text-align: center; 
+      color: var(--accent); 
+      font-weight: bold; 
+      margin-bottom: 10px; 
+      background: #eff6ff; 
+      padding: 10px; 
+      border-radius: 8px; 
+      max-width: 800px; 
+      margin-left: auto; 
+      margin-right: auto; 
+    }
+
+    .error-msg { 
+      color: #ef4444; 
+      margin-top: 15px; 
+      display: none; 
+      font-weight: bold; 
+    }
+
+    /* =========================================================
+       GİZLİLİK ODAKLI GERİ BİLDİRİM (FEEDBACK) MODÜLÜ TASARIMI 
+       ========================================================= */
+    .feedback-box {
+      margin-top: 40px; 
+      padding: 30px; 
+      border-radius: var(--radius); 
+      background: #fff; 
+      border: 2px solid var(--border);
+      text-align: center; 
+      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    }
+    .feedback-options { 
+      display: flex; 
+      justify-content: center; 
+      gap: 15px; 
+      margin-top: 20px; 
+    }
+    .feedback-btn {
+      padding: 12px 24px; 
+      border: 2px solid var(--border); 
+      border-radius: 30px; 
+      cursor: pointer;
+      font-weight: 700; 
+      transition: 0.3s; 
+      background: #fff; 
+      display: flex; 
+      align-items: center; 
+      gap: 8px; 
+      font-size: 0.95rem;
+    }
+    .feedback-btn.correct:hover, .feedback-btn.correct.active { 
+      border-color: var(--success); color: var(--success); background: #f0fdf4; 
+    }
+    .feedback-btn.incorrect:hover, .feedback-btn.incorrect.active { 
+      border-color: var(--danger); color: var(--danger); background: #fef2f2; 
+    }
+    #feedbackExplanation { 
+      margin-top: 20px; 
+      display: none; 
+      text-align: left; 
+      animation: fadeIn 0.3s; 
+    }
+    .privacy-note { 
+      font-size: 0.75rem; 
+      color: #94a3b8; 
+      margin-top: 15px; 
+      font-style: italic; 
+    }
+
+    /* =========================================================
+       📱 MOBİL UI - STICKY FOOTER VE ERGONOMİ DÜZENLEMELERİ 
+       ========================================================= */
+    @media (max-width: 768px) {
+      body { 
+        padding: 10px; 
+        padding-bottom: 95px; 
+      } 
+      
+      .container { 
+        padding: 20px 15px; 
+        margin-bottom: 0; 
+      }
+      
+      input, select, textarea { 
+        font-size: 16px !important; 
+      }
+      
+      .checkbox-item { 
+        padding: 16px; 
+        margin-bottom: 5px; 
+      }
+      
+      .nav-btns {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(10px);
+        padding: 15px 20px;
+        box-shadow: 0 -5px 25px rgba(0,0,0,0.1);
+        z-index: 999;
+        margin: 0;
+        border-top: 1px solid var(--border);
+      }
+
+      .nav-btns .btn { 
+        flex: 1; 
+        text-align: center; 
+        padding: 15px 10px; 
+        font-size: 1.05rem; 
+      }
+
+      #btnPrev { 
+        margin-right: 15px; 
+        flex: 0.5; 
+      }
+      
+      .mahsup-row { 
+        grid-template-columns: 1fr; 
+        gap: 10px; 
+        position: relative; 
+        padding-bottom: 50px; 
+      }
+
+      .btn-remove { 
+        position: absolute; 
+        bottom: 15px; 
+        right: 15px; 
+        width: 40px; 
+        height: 40px; 
+      }
+    }
+    
+    @media print {
+      @page { size: A4 portrait; margin: 10mm; }
+      body { background: #fff; padding: 0; margin: 0; }
+      
+      body.printing-summary { zoom: 0.85; }
+      body.printing-summary .result-grid { gap: 10px; }
+      body.printing-summary .result-card { padding: 15px; }
+      body.printing-summary .info-box { padding: 15px; margin-top: 15px; font-size: 0.85rem; }
+      body.printing-summary #resSummaryBoard > div { padding: 15px !important; margin-bottom: 15px !important; }
+
+      body.printing-summary .container { display: block !important; box-shadow: none; padding: 0; max-width: 100%; margin: 0; }
+      body.printing-summary header, body.printing-summary .progress-container, body.printing-summary .nav-btns, body.printing-summary .tabs, body.printing-summary .btn, body.printing-summary #btnSummaryPrint, body.printing-summary .feedback-box { display: none !important; }
+      body.printing-summary .step-panel:not(#panel6) { display: none !important; }
+      body.printing-summary .print-area { display: none !important; }
+      body:not(.printing-summary) .container, body:not(.printing-summary) .modal-overlay, body:not(.printing-summary) .print-toolbar, body:not(.printing-summary) .editable-hint { display: none !important; }
+      body:not(.printing-summary) .print-area { display: block !important; background: #fff; padding: 0; }
+      body:not(.printing-summary) .print-document { padding: 0; box-shadow: none !important; max-width: 100%; margin: 0; border: none !important; }
+    }
+  </style>
 </head>
 <body>
 
-    <div id="intro-overlay">
-        <div class="intro-content">
-            <img src="huseyin_portre.png" alt="Hüseyin Portre" class="intro-character-image">
-            <div class="intro-text-container">
-                <h1 class="intro-line intro-line-1">Borçtan Kaçış</h1>
-                <p class="intro-line intro-line-2">
-                    Kahramanımız Hüseyin... Türkiye şartlarında asgari ücret ile ayın sonunu getirmeye çalışıyor. 
-                    Bunu yaparken de kredi kartları ve peşini bırakmayan borçlulardan kaçmak zorunda.
-                </p>
-                <p class="intro-line intro-line-3 call-to-action">
-                    Hadi bu sabit gelirli arkadaşımızı bir sonraki maaş gününe ulaştıralım!
-                </p>
+  <div class="container" id="mainUi">
+    <header>
+      <h1>İnfazmatik Pro Master ⚖️</h1>
+      <p style="font-size: 0.95rem; color: #64748b; margin-top: 10px; line-height: 1.6; text-align: justify; padding: 10px; background: #f8fafc; border-left: 4px solid var(--accent); border-radius: 0 8px 8px 0;">
+        Bu sistem; infaz hesaplamalarını yerel yorum farklılıklarından arındırarak, doğrudan 5275 sayılı Kanun ve ilgili yönetmeliklerin emredici hükümlerine göre yapar. Uygulamada kurum bazlı karşılaşılan farklılıklar sistemin bir hatası değil, hukuki yorum çeşitliliğidir.
+        Ayrıca unutulmamalıdır ki, hükümlünün kapalı ceza infaz kurumundan açık ceza infaz kurumuna ya da denetimli serbestlik müdürlüğüne nakli için öncellikle iyi halli olması gerekir.
+      </p>
+    </header>
+
+    <div class="progress-container">
+      <div class="progress-line"></div>
+      <div class="step-bubble active" data-step="1">1</div>
+      <div class="step-bubble" data-step="2">2</div>
+      <div class="step-bubble" data-step="3">3</div>
+      <div class="step-bubble" data-step="4">4</div>
+      <div class="step-bubble" data-step="5" style="border-radius: 8px;">K</div>
+      <div class="step-bubble" data-step="6">S</div>
+    </div>
+
+    <form id="infazForm" onsubmit="return false;" autocomplete="off">
+      
+      <!-- STEP 1 -->
+      <div class="step-panel active" id="panel1">
+        <h3 id="panel1Title">Adım 1: Karar ve Süre Bilgileri (Ceza 1)</h3>
+        <p style="color:#64748b; font-size: 0.9rem;">Bu bilgiler sadece şu an girdiğiniz cezaya aittir. Her yeni ceza eklemede sıfırlanır.</p>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Hapis Türü</label>
+            <select id="sentenceType">
+              <option value="sureli">Süreli Hapis</option>
+              <option value="muebbet">Müebbet Hapis</option>
+              <option value="agirlastirilmis">Ağırlaştırılmış Müebbet</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Ceza (Yıl)</label>
+            <input type="number" id="valY" min="0" value="0">
+          </div>
+          <div class="form-group">
+            <label>Ay</label>
+            <input type="number" id="valM" min="0" value="0">
+          </div>
+          <div class="form-group">
+            <label>Gün</label>
+            <input type="number" id="valD" min="0" value="0">
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Suçun İşleniş Biçimi</label>
+            <select id="crimeIntent">
+              <option value="intentional">Kasten İşlenen Suç</option>
+              <option value="negligent">Taksirle İşlenen Suç (m.85 Hariç)</option>
+              <option value="negligentHomicide">Taksirle Öldürme (m.85 vb.)</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Bu Cezanın Suç Tarihi</label>
+            <div class="date-triple" id="crimeDateGroup">
+              <input type="number" class="dt-d" placeholder="GG" min="1" max="31" oninput="window.App.tabNext(this, 2)">
+              <span class="dt-sep">/</span>
+              <input type="number" class="dt-m" placeholder="AA" min="1" max="12" oninput="window.App.tabNext(this, 2)">
+              <span class="dt-sep">/</span>
+              <input type="number" class="dt-y" placeholder="YYYY" min="1900" max="2100">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Bu Cezada Tekerrür Durumu</label>
+            <select id="recidivism">
+              <option value="none">Yok</option>
+              <option value="once">Birinci Kez Mükerrer (m.108/1 - 2/3)</option>
+              <option value="twice">İkinci Kez Mükerrer (m.108/3 - 3/4)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group" id="priorSentenceGroup" style="display: none; border-left: 3px solid var(--warning); padding-left: 10px; margin-top: 10px;">
+          <label style="color: var(--warning);">Tekerrüre Esas Ceza (Önceki Ceza - m.108/2 Kapağı İçin)</label>
+          <div style="display: flex; gap: 5px; max-width: 300px;">
+            <input type="number" id="priorY" min="0" value="0" placeholder="Yıl" style="width: 33%;">
+            <input type="number" id="priorM" min="0" value="0" placeholder="Ay" style="width: 33%;">
+            <input type="number" id="priorD" min="0" value="0" placeholder="Gün" style="width: 33%;">
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="step-panel" id="panel2">
+        <h3>Adım 2: Hükümlü ve İnfaz Şartları (SABİT)</h3>
+        <p style="color:#64748b; font-size: 0.9rem;">Bu ekrandaki bilgiler tüm hesaplama havuzu için sabittir. Diğer cezalarda tekrar sorulmaz.</p>
+
+        <div class="checkbox-group" style="grid-template-columns: 1fr;">
+          <label class="checkbox-item" style="border-color: var(--accent); background: #eff6ff;">
+            <input type="checkbox" id="crime_multiple">
+            <div style="display: flex; flex-direction: column;">
+              <span style="color: var(--accent); font-weight: bold;">Genel Dosya Durumu: Cezalar Birden Fazla Dosyanın Toplamı (İçtima) Mı?</span>
+              <span style="color: #64748b; font-size: 0.8rem;">İşaretlenirse Kanundaki 28 ve 32 Yıllık Maksimum İnfaz Sınırları Tüm Toplama Uygulanır.</span>
+            </div>
+          </label>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Doğum Tarihi</label>
+            <div class="date-triple" id="birthDateGroup">
+              <input type="number" class="dt-d" placeholder="GG" min="1" max="31" oninput="window.App.tabNext(this, 2)">
+              <span class="dt-sep">/</span>
+              <input type="number" class="dt-m" placeholder="AA" min="1" max="12" oninput="window.App.tabNext(this, 2)">
+              <span class="dt-sep">/</span>
+              <input type="number" class="dt-y" placeholder="YYYY" min="1900" max="2100">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label>Cinsiyet</label>
+            <select id="gender">
+              <option value="male">Erkek</option>
+              <option value="female">Kadın</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>İnfaza Başlama (Giriş) Tarihi</label>
+            <div class="date-triple" id="entryDateGroup">
+              <input type="number" class="dt-d" placeholder="GG" min="1" max="31" oninput="window.App.tabNext(this, 2)">
+              <span class="dt-sep">/</span>
+              <input type="number" class="dt-m" placeholder="AA" min="1" max="12" oninput="window.App.tabNext(this, 2)">
+              <span class="dt-sep">/</span>
+              <input type="number" class="dt-y" placeholder="YYYY" min="1900" max="2100">
+            </div>
+          </div>
+        </div>
+
+        <div class="checkbox-group">
+          <label class="checkbox-item">
+            <input type="checkbox" id="isPregnant"> 
+            <div>Gebe (Hamile)</div>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" id="gaveBirth"> 
+            <div>0-6 Yaş Arası Çocuğu Var / Doğum Yaptı</div>
+          </label>
+          
+          <div id="birthDateUI" style="display:none; padding-left:20px; width:100%; grid-column: 1 / -1;">
+            <label style="display: block; margin-bottom: 5px;">Çocuğun Doğum Tarihi:</label>
+            <div class="date-triple" id="childBirthDateGroup" style="max-width: 250px;">
+              <input type="number" class="dt-d" placeholder="GG" min="1" max="31" oninput="window.App.tabNext(this, 2)">
+              <span class="dt-sep">/</span>
+              <input type="number" class="dt-m" placeholder="AA" min="1" max="12" oninput="window.App.tabNext(this, 2)">
+              <span class="dt-sep">/</span>
+              <input type="number" class="dt-y" placeholder="YYYY" min="1900" max="2100">
+            </div>
+          </div>
+
+          <label class="checkbox-item">
+            <input type="checkbox" id="hasSevereIllness"> 
+            <div>Ağır Hastalık / Engellilik (Raporlu)</div>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" id="calledBySummons"> 
+            <div>Davetiye (Çağrı) Üzerine Kendi Teslim Oldu</div>
+          </label>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="step-panel" id="panel3">
+        <h3>Adım 3: Mahsup ve Geçmiş Süreler (İndirim Merkezi)</h3>
+        <p style="color:#64748b; font-size: 0.9rem;">Müvekkilin daha önce tutuklu kaldığı veya denetimde geçirdiği tüm süreleri tek bir ekranda yönetin.</p>
+
+        <!-- A. Önceki DS -->
+        <div class="checkbox-section-title" style="color: var(--purple); margin-top: 0;">A. Önceki Denetimli Serbestlik (Prior DS)</div>
+        <div class="form-group" style="background: #faf5ff; padding: 20px; border: 1px dashed var(--purple); border-radius: 10px; margin-bottom: 30px;">
+          <p style="font-size: 0.85rem; color: #6b21a8; margin-top: 0;">Hükümlünün infazı devam eden bu ceza yada cezalardan denetimli serbestlikte geçirdiği günler var ise burada belirtin. Hesaba yeni ceza eklendiğinde bu süre sıfırlanmamalıdır. </p>
+          <label style="color: var(--purple);">Doğrudan Gün Olarak Giriş</label>
+          <input type="number" id="priorDsDays" min="0" value="0" style="max-width: 200px; font-weight: bold; border-color: var(--purple); font-size: 1.1rem; margin-bottom: 15px;">
+          
+          <div id="priorDsContainer"></div>
+          <button type="button" class="btn btn-secondary" id="btnAddPriorDs" style="width: 100%; border: 2px dashed var(--purple); color: var(--purple);">+ Yeni Denetim Tarih Aralığı Ekle</button>
+        </div>
+
+        <!-- B. Doğrudan Gün -->
+        <div class="checkbox-section-title" style="color: var(--accent);">B. Gözaltı / Tutukluluk Mahsubu (Sabit Gün)</div>
+        <div class="form-group" style="margin-bottom: 30px; background: #eff6ff; padding: 20px; border-radius: 10px; border: 1px dashed var(--accent);">
+          <label style="color: var(--accent);">Doğrudan Gün Olarak Mahsup</label>
+          <input type="number" id="manualMahsupDays" min="0" value="0" placeholder="Örn: 100" style="max-width: 200px; font-weight: bold; font-size: 1.1rem;">
+          <p style="margin: 8px 0 0; font-size: 0.8rem; color: #64748b;">Hükümlü tutuklu kaldığı tarihleri hatırlamıyorsa sadece net gün sayısını buraya yazabilirsiniz.</p>
+        </div>
+
+        <!-- C. Tarih Aralığı -->
+        <div class="checkbox-section-title" style="color: var(--secondary);">C. Gözaltı / Tutukluluk Mahsubu (Tarih Aralığı)</div>
+        <p style="font-size: 0.85rem; color: var(--secondary); margin-bottom: 15px;">Dilerseniz aşağıdaki butondan cezaevine giriş-çıkış tarihlerini seçerek sistemin günü otomatik hesaplamasını sağlayabilirsiniz.</p>
+        
+        <div id="mahsupContainer"></div>
+        <button type="button" class="btn btn-secondary" id="btnAddMahsup" style="width: 100%; border: 2px dashed #cbd5e1;">+ Yeni Tutukluluk Aralığı Ekle</button>
+      </div>
+
+      <!-- STEP 4 -->
+      <div class="step-panel" id="panel4">
+        <h3>Adım 4: Bu Cezanın Suç Tasnifi (m.107 ve m.108 Uyumlu)</h3>
+        <p style="color:#64748b; font-size: 0.9rem;">Şu an girdiğiniz cezanın oranını ve Açık Cezaevi şartlarını belirleyecek suç türlerini işaretleyiniz.</p>
+
+        <div class="checkbox-group" style="padding: 15px;">
+          <div class="checkbox-section-title" style="color: var(--warning);">KADEME 1: İnfaz Oranını 2/3'e Çıkaran Suçlar</div>
+          
+          <label class="checkbox-item">
+            <input type="checkbox" class="crime-cb" id="crime_81_82_83"> 
+            <div>Kasten Öldürme (TCK 81, 82, 83)</div>
+          </label>
+          
+          <label class="checkbox-item">
+            <input type="checkbox" class="crime-cb" id="crime_87_94_96"> 
+            <div>İşkence, Eziyet, Nitelikli Yaralama (TCK 87/2-d, 94, 95, 96)</div>
+          </label>
+          
+          <label class="checkbox-item" style="border-left: 4px solid var(--warning);">
+            <input type="checkbox" class="crime-cb" id="crime_132_138"> 
+            <div>Özel Hayata Karşı Suçlar (TCK 132-138)</div>
+          </label>
+          
+          <label class="checkbox-item">
+            <input type="checkbox" class="crime-cb" id="crime_102_1_104_1_105"> 
+            <div>Cinsel Saldırı/İlişki (Basit), Taciz (TCK 102/1, 104/1, 105)</div>
+          </label>
+          
+          <label class="checkbox-item">
+            <input type="checkbox" class="crime-cb" id="crime_326_339"> 
+            <div>Devlet Sırlarına Karşı Suçlar (TCK 326-339)</div>
+          </label>
+          
+          <label class="checkbox-item">
+            <input type="checkbox" class="crime-cb" id="crime_220"> 
+            <div>Örgüt Kurma / Yönetme / Üyelik (TCK 220 Adi)</div>
+          </label>
+
+          <div class="checkbox-section-title" style="color: var(--danger);">KADEME 2: İnfaz Oranını 3/4'e Çıkaran Suçlar</div>
+          
+          <label class="checkbox-item">
+            <input type="checkbox" class="crime-cb" id="crime_188"> 
+            <div>Uyuşturucu İmal ve Ticareti (TCK 188)</div>
+          </label>
+          
+          <label class="checkbox-item">
+            <input type="checkbox" class="crime-cb" id="crime_102_2_103_104_2_3"> 
+            <div>Nitelikli Cinsel Saldırı/İstismar/İlişki (TCK 102/2, 103, 104/2-3)</div>
+          </label>
+          
+          <label class="checkbox-item">
+            <input type="checkbox" class="crime-cb" id="crime_terror"> 
+            <div>Terör Suçları (TMK Kapsamındaki Suçlar)</div>
+          </label>
+
+          <label class="checkbox-item" id="terror_pisman_group" style="display: none; border: 1px solid #bbf7d0; background: #f0fdf4;">
+            <input type="checkbox" class="crime-cb" id="terror_pisman">
+            <div style="display: flex; flex-direction: column;">
+              <span style="color: #166534; font-weight: bold;">Örgütten Ayrılma (İdare ve Gözlem Kurulu Tespiti)</span>
+            </div>
+          </label>
+
+          <div class="checkbox-section-title" style="color: var(--secondary);">KADEME 3: Açık Cezaevi Özel Durumları</div>
+          
+          <label class="checkbox-item" style="border: 1px solid #fed7aa; background: #fff7ed;">
+            <input type="checkbox" class="crime-cb" id="crime_earthquake">
+            <div style="display: flex; flex-direction: column;">
+              <span style="color: #c2410c; font-weight: bold;">Deprem Nedeniyle Bina Yıkılması (Taksirle Öldürme)</span>
+              <span style="color: #64748b; font-size: 0.75rem; margin-top: 3px;">(Geçici 10 İstisnası: +3 Yıl İndirimi Alamaz)</span>
+            </div>
+          </label>
+          
+          <label class="checkbox-item" style="border: 1px solid #fecdd3; background: #fff1f2;">
+            <input type="checkbox" class="crime-cb" id="open_prison_ban">
+            <div style="display: flex; flex-direction: column;">
+              <span style="color: #be123c; font-weight: bold;">Açığa Ayrılma Kesin Engeli Var</span>
+              <span style="color: #64748b; font-size: 0.75rem; margin-top: 3px;">(KS geri alınması, 2. kez firar, infaz yanması vb.)</span>
+            </div>
+          </label>
+          
+          <label class="checkbox-item">
+            <input type="checkbox" class="crime-cb" id="crime_theft"> 
+            <div>Hırsızlık, Yağma (TCK 142, 148, 149) (Açığa 5 Yıl Kala)</div>
+          </label>
+          
+          <label class="checkbox-item">
+            <input type="checkbox" class="crime-cb" id="crime_spouse_injury"> 
+            <div>Eşe Karşı Kasten Yaralama vb. (TCK 86/3-a, 96/2-b) (Açığa 3 Yıl)</div>
+          </label>
+        </div>
+      </div>
+
+      <!-- STEP 5 -->
+      <div class="step-panel" id="panel5">
+        <h3>Adım 5: Kontrol Masası (Eklenen Cezalar)</h3>
+        <p style="color:#64748b; font-size: 0.9rem;">Eklediğiniz tüm cezaları kontrol edin. Eksik ceza varsa "Yeni Ceza Ekle"ye basın. Her şey doğruysa "HESAPLA" ile sonucu görün.</p>
+
+        <div id="summaryList" class="summary-list"></div>
+        <div id="emptyListWarning" class="error-msg" style="display: none; text-align: center; margin-top: 10px;">Lütfen hesaplama yapmadan önce en az 1 ceza ekleyin!</div>
+
+        <button type="button" class="btn btn-secondary" onclick="window.App.prepareNewSentence()"
+                style="width: 100%; border: 2px dashed var(--accent); color: var(--accent); background: #eff6ff; margin-top: 20px; font-size: 1.1rem;">
+          ➕ YENİ CEZA EKLE (Dosyaya Ceza İlave Et)
+        </button>
+      </div>
+
+      <!-- STEP 6 -->
+      <div class="step-panel" id="panel6">
+        <h3>Adım 6: Kusursuz İnfaz Takvimi</h3>
+
+        <div class="tabs">
+          <div class="tab-btn active" data-tab="tab_summary">Kapalı / Açık Analizi</div>
+          <div class="tab-btn" data-tab="tab_options">Ne Yapılabilir? (Dilekçe Modülü)</div>
+        </div>
+
+        <div id="tab_summary" class="tab-content active">
+          
+          <div style="text-align: right; margin-bottom: 15px;">
+            <button type="button" class="btn btn-secondary" id="btnSummaryPrint" onclick="window.App.printSummary()" style="padding: 10px 20px; font-size: 0.9rem; background: #e2e8f0; color: #334155; border: 1px solid #cbd5e1;">🖨️ Sonuç Ekranını Yazdır</button>
+          </div>
+
+          <!-- YENİ EKLENEN: İNFAZ ÖZETİ (FİŞİ) -->
+          <div id="resSummaryBoard"></div>
+
+          <div class="result-grid">
+            
+            <!-- ZİRVE KARTI: TOPLAM CEZA -->
+            <div class="result-card total">
+              <div class="result-label">Dosyadaki Toplam Ceza Süresi</div>
+              <div class="result-val" id="resTotalSentence">--</div>
+              <div class="result-sub">İçtima Öncesi Brüt Toplam</div>
+            </div>
+
+            <div class="result-card danger">
+              <div class="result-label">Kapalı Cezaevi (Net Yatar)</div>
+              <div class="result-val" id="resKapali">--</div>
+              <div class="result-sub" id="resKapaliDate">Açığa Geçiş / Tahliye: --</div>
+            </div>
+            
+            <div class="result-card warning">
+              <div class="result-label">Açık Cezaevi (Net Yatar)</div>
+              <div class="result-val" id="resAcik">--</div>
+              <div class="result-sub" id="resAcikSub">Açıkta Geçirilecek Süre</div>
+            </div>
+
+            <div class="result-card purple">
+              <div class="result-label">Denetimli Serbestlik (DS)</div>
+              <div class="result-val" id="resDSVal">--</div>
+              <div class="result-sub">Açık Kurumdan Tahliye Tarihi</div>
+            </div>
+            
+            <div class="result-card success">
+              <div class="result-label">Koşullu Salıverilme (KS)</div>
+              <div class="result-val" id="resKS">--</div>
+              <div class="result-sub">İmza Sürecinin Bitişi</div>
+            </div>
+            
+            <div class="result-card primary">
+              <div class="result-label">Hak Ederek Tahliye (HET)</div>
+              <div class="result-val" id="resHET">--</div>
+              <div class="result-sub">Dosyanın Kapanışı</div>
+            </div>
+
+          </div>
+
+          <div id="calcLogicNotes" class="info-box"></div>
+
+          <!-- GİZLİLİK ODAKLI & FIREBASE DESTEKLİ GERİ BİLDİRİM PANALİ -->
+          <div class="feedback-box">
+            <strong style="font-size: 1.1rem; color: var(--primary);">Bu hesaplama sonucu doğru mu?</strong>
+            <p style="font-size: 0.85rem; color: #64748b; margin-top: 5px;">Hata olduğunu düşünüyorsanız lütfen bildirin, sistemi iyileştirelim.</p>
+
+            <div class="feedback-options">
+              <button type="button" class="feedback-btn correct" id="btnCorrect" onclick="window.App.setFeedback(true)">✅ Doğru</button>
+              <button type="button" class="feedback-btn incorrect" id="btnIncorrect" onclick="window.App.setFeedback(false)">❌ Hatalı</button>
+            </div>
+
+            <div id="feedbackExplanation">
+              <label style="font-size: 0.8rem; font-weight: bold; color: var(--danger); margin-bottom: 5px; display: block;">Lütfen Tespit Ettiğiniz Hatayı Yazın:</label>
+              <textarea id="feedbackText" placeholder="Örn: Koşullu salıverilme tarihi 2 ay hatalı çıktı..." style="width: 100%; height: 90px; margin-bottom: 10px;"></textarea>
+              <button type="button" class="btn btn-success" id="btnSendFeedback" onclick="window.App.sendFeedback()" style="border-radius: 10px; padding: 12px; font-weight: bold; cursor: pointer; border: none; width: 100%;">Raporu Gönder (Sisteme Kaydet)</button>
+              <p class="privacy-note">🔒 Güvenlik Notu: Gönderilecek rapor, dilekçe formuna girdiğiniz şahsi bilgileri (TC, isim vb.) <u>içermez.</u> Sadece teknik hesaplama verileri arka planda sessizce veritabanına iletilir.</p>
+            </div>
+
+            <div id="feedbackThanks" style="display:none; margin-top: 20px; padding: 15px; background: #f0fdf4; border-radius: 8px; color: #166534; font-weight: bold;">
+              Desteğiniz için teşekkürler! Geri bildiriminiz başarıyla iletildi.
+            </div>
+          </div>
+
+        </div>
+
+        <div id="tab_options" class="tab-content">
+          <div class="option-grid" id="resOptions"></div>
+        </div>
+      </div>
+
+      <!-- MOBİLDE AŞAĞI YAPIŞACAK (STICKY) MENÜ -->
+      <div class="nav-btns">
+        <button type="button" class="btn btn-secondary" id="btnPrev" disabled>Geri</button>
+        <button type="button" class="btn btn-primary" id="btnNext">İleri</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Modal -->
+  <div id="petitionModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Dilekçe Veri Girişi</h2>
+        <button type="button" class="btn-close" onclick="window.App.closePetitionModal()" style="font-size:1.5rem; background:none; border:none; cursor:pointer;">×</button>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group"><label>Makam Adı (İl/İlçe)</label><input type="text" id="petMakam" placeholder="Örn: İSTANBUL İNFAZ HÂKİMLİĞİ'NE"></div>
+        <div class="form-group"><label>Hükümlü Adı Soyadı</label><input type="text" id="petConvictName" placeholder="Ahmet Yılmaz"></div>
+        <div class="form-group"><label>Hükümlü T.C. Kimlik</label><input type="text" id="petConvictTC" placeholder="12345678901"></div>
+        <div class="form-group"><label>Kararı Veren Mahkeme</label><input type="text" id="petCourtName" placeholder="İstanbul 1. Ağır Ceza Mahkemesi"></div>
+        <div class="form-group"><label>Esas / Karar No</label><input type="text" id="petFileNo" placeholder="2024/101 E. - 2024/205 K."></div>
+        <div class="form-group"><label>Avukat Adı Soyadı</label><input type="text" id="petLawyerName" placeholder="Av. Ali Veli"></div>
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label>Özel Durum / Mazeret (İsteğe Bağlı)</label>
+          <textarea id="petCustomReason" placeholder="Örn: Müvekkil halihazırda X Üniversitesinde son sınıf öğrencisi olup..."></textarea>
+        </div>
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label>Ekler (İsteğe Bağlı)</label>
+          <input type="text" id="petAttachments" placeholder="Örn: 1- Öğrenci Belgesi, 2- Nüfus Kayıt Örneği">
+        </div>
+      </div>
+      <button type="button" class="btn btn-success" onclick="window.App.generateAndPrintPetition()">🖨️ Dilekçeyi Oluştur ve Önizle</button>
+    </div>
+  </div>
+
+  <!-- Print -->
+  <div id="printArea" class="print-area">
+    <div class="editable-hint">💡 Önizleme Ekranındasınız: Metne tıklayıp düzenleyebilirsiniz.</div>
+    <div class="print-toolbar">
+      <button type="button" class="btn btn-primary" onclick="window.print()">🖨️ Yazdır (Çalışmazsa Ctrl+P)</button>
+      <button type="button" class="btn btn-secondary" onclick="window.App.closePrintView()">🔙 Geri Dön</button>
+    </div>
+
+    <div class="print-document" contenteditable="true" spellcheck="false" id="editableDocument">
+      <div class="print-header" id="printMakam">MAKAM ADI'NA</div>
+      
+      <div class="print-row" style="display:flex; margin-bottom: 10px;">
+        <div class="print-label" style="width: 150px; font-weight: bold;">TALEP EDEN<br>HÜKÜMLÜ :</div>
+        <div class="print-content" id="printConvict" style="flex:1;">Ahmet Yılmaz (TC: 12345678901)</div>
+      </div>
+      
+      <div class="print-row" style="display:flex; margin-bottom: 10px;">
+        <div class="print-label" style="width: 150px; font-weight: bold;">MÜDAFİİ :</div>
+        <div class="print-content" id="printLawyer" style="flex:1;">Av. Ali Veli</div>
+      </div>
+      
+      <div class="print-row" style="display:flex; margin-bottom: 25px;">
+        <div class="print-label" style="width: 150px; font-weight: bold;">KONU :</div>
+        <div class="print-content" style="flex:1;"><b id="printSubject">M.110 Kapsamında Talebimizdir.</b></div>
+      </div>
+
+      <div class="print-body">
+        <p><b>AÇIKLAMALAR :</b></p>
+        <p><b>1-</b> Müvekkil hakkında <span id="printCourtText">X Mahkemesi</span>'nin <span id="printFileText">Y Sayılı</span> ilamı ile ceza verilmiş olup, cezası kesinleşmiş ve infaz işlemleri başlamıştır.</p>
+        <p><b>2-</b> <span id="printReasonText">Kanuni gerekçe buraya gelecek.</span></p>
+        <p id="printCustomReasonContainer" style="display: none;"><b>3-</b> <span id="printCustomReasonText">Özel Mazeret Buraya Gelecek</span></p>
+        <p><b><span id="printLastParaNum">3</span>-</b> 5275 sayılı Kanun ve ilgili mevzuat çerçevesinde yapılan hesaplamalar neticesinde müvekkilin yasal şartları taşıdığı sabittir.</p>
+        
+        <p><b>SONUÇ VE İSTEM :</b></p>
+        <p>Yukarıda arz ve izah edilen nedenlerle; müvekkil hakkındaki hapis cezasının <b><span id="printResultText">Talep Sonucu</span></b> doğrultusunda infaz edilmesine karar verilmesini bilvekale saygılarımla talep ederim. <span id="printDateText"></span></p>
+      </div>
+
+      <div class="print-footer" style="display:flex; justify-content: space-between; margin-top: 50px;">
+        <div class="print-attachments" id="printAttachmentsContainer" style="display: none;">
+          <b>EKLER:</b><br><span id="printAttachmentsText"></span>
+        </div>
+        <div class="print-sign" style="margin-left: auto; text-align: center;">
+          <b>Hükümlü Müdafii</b><br><br><br>
+          <span id="printSignName">Av. Ali Veli</span><br>
+          (e-imzalıdır)
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Firebase SDK & Uygulama Mantığı -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+/** * 1. ADIM: KULLANICININ KENDİ FIREBASE ANAHTARLARI SİSTEME EKLENDİ 
+ */
+const firebaseConfig = {
+  apiKey: "AIzaSyDYJtnAEAdMKnUgaVdJGcB_joTsfSo5un4",
+  authDomain: "infazmatik-95586.firebaseapp.com",
+  projectId: "infazmatik-95586",
+  storageBucket: "infazmatik-95586.firebasestorage.app",
+  messagingSenderId: "1078019916409",
+  appId: "1:1078019916409:web:f1efaffe22253067940aa8",
+  measurementId: "G-HCRD1RWR4Z"
+};
+
+/**
+ * 2. ADIM: FIREBASE BAŞLATILDI
+ */
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+
+/**
+ * =========================================================================
+ * 🛡️ ANTI-THEFT (HIRSIZLIK ÖNLEYİCİ) GÜVENLİK KALKANI
+ * =========================================================================
+ */
+(function initSecurityShield() {
+    document.addEventListener('contextmenu', e => {
+        if (!e.target.closest('input') && !e.target.closest('textarea') && !e.target.closest('#editableDocument')) {
+            e.preventDefault();
+        }
+    });
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'F12' || 
+           (e.ctrlKey && e.shiftKey && ['I','J','C','i','j','c'].includes(e.key)) || 
+           (e.ctrlKey && ['U','S','u','s'].includes(e.key))) { 
+               e.preventDefault(); 
+               return false; 
+        }
+        if (e.ctrlKey && (e.key === 'C' || e.key === 'c')) {
+            if (!e.target.closest('#editableDocument') && !e.target.closest('input') && !e.target.closest('textarea')) { 
+                e.preventDefault(); 
+                return false; 
+            }
+        }
+    });
+
+    document.addEventListener('copy', e => {
+        if (!e.target.closest('#editableDocument') && !e.target.closest('input') && !e.target.closest('textarea')) {
+            e.clipboardData.setData('text/plain', '© İnfazmatik - Kaynak Kodları Kopyalanamaz ve Çoğaltılamaz.'); 
+            e.preventDefault();
+        }
+    });
+
+    setInterval(function() {
+        const start = new Date().getTime(); 
+        debugger; 
+        const end = new Date().getTime();
+        if (end - start > 100) {
+            document.body.innerHTML = "<h1 style='color:red; text-align:center; margin-top:20%; font-family:sans-serif;'>GÜVENLİK İHLALİ!<br>Sistem Koruma Altındadır. Kaynak Kod İncelemesi Yasaktır.</h1>";
+        }
+    }, 1000);
+})();
+
+/**
+ * =========================================================================
+ * ⚙️ UYGULAMA MOTORU (INF-OS CORE)
+ * =========================================================================
+ */
+const MEVZUAT = {
+  tarihler: { 
+      gecici6: '2020-03-30', 
+      gecici10: '2023-07-31', 
+      yuzde10_kural: '2025-06-04' 
+  },
+  acik: { 
+      dogrudan_kasten_sinir: 3, 
+      dogrudan_taksir_sinir: 5, 
+      limit_standart: 7, 
+      limit_hirsizlik_uyusturucu: 5, 
+      limit_cinsel_ese_karsi: 3, 
+      limit_terror_pisman: 1 
+  },
+  m110: { 
+      v1_kasten: 3, 
+      v1_taksir: 5, 
+      v2_std: 3, 
+      v2_70: 4, 
+      v2_75: 5, 
+      v2_80: 6, 
+      v4_birth: 5 
+  },
+  m16: { 
+      childAgeLimit: 10, 
+      birthLimitMonths: 18 
+  },
+  m17: { 
+      limitKasten: 3, 
+      limitTaksir: 5 
+  }
+};
+
+window.App = {
+  currentStep: 1, 
+  sentences: [], 
+  editingIndex: -1, 
+  currentOptionsData: [], 
+  displayedOptionsData: [], 
+  selectedOptionId: null,
+  feedbackVal: null,
+
+  init() { 
+      this.bindEvents(); 
+      this.prepareNewSentence(); 
+  },
+
+  bindEvents() {
+    document.getElementById('btnNext').onclick = () => this.handleNext();
+    document.getElementById('btnPrev').onclick = () => this.moveStep(-1);
+    
+    document.getElementById('btnAddMahsup').onclick = () => this.addRangeRow('mahsupContainer', 'accent');
+    document.getElementById('btnAddPriorDs').onclick = () => this.addRangeRow('priorDsContainer', 'purple');
+    
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.onclick = (e) => this.switchTab(e.target);
+    });
+
+    document.getElementById('gaveBirth').onchange = (e) => { 
+        document.getElementById('birthDateUI').style.display = e.target.checked ? 'block' : 'none'; 
+    };
+
+    document.getElementById('recidivism').onchange = (e) => { 
+        document.getElementById('priorSentenceGroup').style.display = e.target.value === 'once' ? 'flex' : 'none'; 
+    };
+
+    document.getElementById('crime_terror').onchange = () => {
+      const isTerror = document.getElementById('crime_terror').checked;
+      document.getElementById('terror_pisman_group').style.display = isTerror ? 'flex' : 'none';
+      if (!isTerror) {
+          document.getElementById('terror_pisman').checked = false;
+      }
+    };
+
+    window.onafterprint = () => { 
+        this.closePetitionModal(); 
+    };
+  },
+
+  tabNext(input, maxLen) {
+    if(input.value.length >= maxLen) {
+        const parent = input.closest('.date-triple');
+        const inputs = Array.from(parent.querySelectorAll('input'));
+        const idx = inputs.indexOf(input);
+        if (idx > -1 && idx < inputs.length - 1) {
+            inputs[idx + 1].focus();
+        }
+    }
+  },
+
+  getDT(id) { 
+      return this.getDTFromElement(document.getElementById(id)); 
+  },
+
+  getDTFromElement(el) {
+    if(!el) return '';
+    let d = el.querySelector('.dt-d').value;
+    let m = el.querySelector('.dt-m').value;
+    let y = el.querySelector('.dt-y').value;
+    
+    if (d && m && y && y.length === 4) {
+        d = d.padStart(2, '0'); 
+        m = m.padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    }
+    return '';
+  },
+
+  setDT(id, val) { 
+      this.setDTFromElement(document.getElementById(id), val); 
+  },
+
+  setDTFromElement(el, val) {
+    if(!el) return;
+    if(val && val.includes('-')) {
+        const [y, m, d] = val.split('-');
+        el.querySelector('.dt-d').value = parseInt(d) || '';
+        el.querySelector('.dt-m').value = parseInt(m) || '';
+        el.querySelector('.dt-y').value = y || '';
+    } else {
+        el.querySelector('.dt-d').value = ''; 
+        el.querySelector('.dt-m').value = ''; 
+        el.querySelector('.dt-y').value = '';
+    }
+  },
+
+  handleNext() {
+    if (this.currentStep === 4) { 
+        this.saveCurrentSentence(); 
+        this.moveStep(1); 
+        return; 
+    }
+    if (this.currentStep === 5) {
+      if (this.sentences.length === 0) {
+        const warn = document.getElementById('emptyListWarning'); 
+        warn.style.display = 'block'; 
+        setTimeout(() => warn.style.display = 'none', 2500); 
+        return;
+      }
+      this.moveStep(1); 
+      return;
+    }
+    if (this.currentStep === 6) { 
+        this.resetAll(); 
+        return; 
+    }
+    this.moveStep(1);
+  },
+
+  moveStep(dir) {
+    document.getElementById(`panel${this.currentStep}`).classList.remove('active');
+    document.querySelector(`.step-bubble[data-step="${this.currentStep}"]`).classList.remove('active');
+    
+    if (dir > 0) {
+        document.querySelector(`.step-bubble[data-step="${this.currentStep}"]`).classList.add('completed');
+    }
+
+    this.currentStep += dir;
+
+    document.getElementById(`panel${this.currentStep}`).classList.add('active');
+    document.querySelector(`.step-bubble[data-step="${this.currentStep}"]`).classList.add('active');
+
+    document.getElementById('btnPrev').disabled = (this.currentStep === 1);
+    const btnNext = document.getElementById('btnNext');
+    
+    if (this.currentStep === 4) {
+        btnNext.innerText = 'Onayla ve Ekle';
+    }
+    else if (this.currentStep === 5) {
+        btnNext.innerText = 'HESAPLA';
+    }
+    else if (this.currentStep === 6) {
+        btnNext.innerText = 'Baştan Başla';
+    }
+    else {
+        btnNext.innerText = 'İleri';
+    }
+
+    if (this.currentStep === 6) {
+        this.runEngine();
+    }
+  },
+
+  switchTab(target) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    target.classList.add('active'); 
+    document.getElementById(target.dataset.tab).classList.add('active');
+  },
+
+  addRangeRow(containerId, colorType = 'accent', start = '', end = '') {
+    const div = document.createElement('div');
+    div.className = 'mahsup-row';
+    
+    if (colorType === 'purple') {
+        div.style.borderColor = 'var(--purple)';
+        div.style.backgroundColor = '#faf5ff';
+    }
+    
+    div.innerHTML = `
+      <div class="form-group">
+        <label style="${colorType === 'purple' ? 'color: var(--purple)' : ''}">Başlangıç</label>
+        <div class="date-triple m-start">
+          <input type="number" class="dt-d" placeholder="GG" min="1" max="31" oninput="window.App.tabNext(this, 2)">
+          <span class="dt-sep">/</span>
+          <input type="number" class="dt-m" placeholder="AA" min="1" max="12" oninput="window.App.tabNext(this, 2)">
+          <span class="dt-sep">/</span>
+          <input type="number" class="dt-y" placeholder="YYYY" min="1900" max="2100">
+        </div>
+      </div>
+      <div class="form-group">
+        <label style="${colorType === 'purple' ? 'color: var(--purple)' : ''}">Bitiş</label>
+        <div class="date-triple m-end">
+          <input type="number" class="dt-d" placeholder="GG" min="1" max="31" oninput="window.App.tabNext(this, 2)">
+          <span class="dt-sep">/</span>
+          <input type="number" class="dt-m" placeholder="AA" min="1" max="12" oninput="window.App.tabNext(this, 2)">
+          <span class="dt-sep">/</span>
+          <input type="number" class="dt-y" placeholder="YYYY" min="1900" max="2100">
+        </div>
+      </div>
+      <button type="button" class="btn-remove" style="${colorType === 'purple' ? 'background:#f3e8ff; color:var(--purple);' : ''}" title="Sil">×</button>
+    `;
+    div.querySelector('.btn-remove').onclick = () => div.remove();
+    document.getElementById(containerId).appendChild(div);
+
+    if(start) {
+        this.setDTFromElement(div.querySelector('.m-start'), start);
+    }
+    if(end) {
+        this.setDTFromElement(div.querySelector('.m-end'), end);
+    }
+  },
+
+  getSentenceFormData() {
+    const mahsupRows = []; 
+    let sentenceMahsupDays = 0;
+    
+    document.querySelectorAll('#mahsupContainer .mahsup-row').forEach(row => {
+      const s = this.getDTFromElement(row.querySelector('.m-start'));
+      const e = this.getDTFromElement(row.querySelector('.m-end'));
+      
+      if (s && e) {
+        mahsupRows.push({ start: s, end: e });
+        const dateS = new Date(s);
+        const dateE = new Date(e);
+        
+        if (!isNaN(dateS) && !isNaN(dateE) && dateE >= dateS) {
+          let diff = Math.round((dateE - dateS) / (1000 * 60 * 60 * 24));
+          if (diff === 0) diff = 1;
+          sentenceMahsupDays += diff;
+        }
+      }
+    });
+
+    let manualMahsupDays = parseInt(document.getElementById('manualMahsupDays').value) || 0;
+    sentenceMahsupDays += manualMahsupDays;
+
+    const flags = {}; 
+    document.querySelectorAll('.crime-cb').forEach(cb => {
+        flags[cb.id] = cb.checked;
+    });
+
+    return {
+      id: (crypto?.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2)),
+      sentenceType: document.getElementById('sentenceType').value,
+      crimeIntent: document.getElementById('crimeIntent').value,
+      valY: parseInt(document.getElementById('valY').value) || 0,
+      valM: parseInt(document.getElementById('valM').value) || 0,
+      valD: parseInt(document.getElementById('valD').value) || 0,
+      crimeDate: this.getDT('crimeDateGroup'),
+      recidivism: document.getElementById('recidivism').value,
+      priorY: parseInt(document.getElementById('priorY').value) || 0,
+      priorM: parseInt(document.getElementById('priorM').value) || 0,
+      priorD: parseInt(document.getElementById('priorD').value) || 0,
+      mahsupData: mahsupRows,
+      manualMahsupDays: manualMahsupDays,
+      mahsupDays: sentenceMahsupDays,
+      flags
+    };
+  },
+
+  saveCurrentSentence() {
+    const data = this.getSentenceFormData();
+    if (this.editingIndex === -1) {
+        this.sentences.push(data);
+    } else { 
+        data.id = this.sentences[this.editingIndex].id; 
+        this.sentences[this.editingIndex] = data; 
+        this.editingIndex = -1; 
+    }
+    this.renderSummary();
+  },
+
+  editSentence(index) {
+    this.editingIndex = index; 
+    const s = this.sentences[index];
+
+    document.getElementById('sentenceType').value = s.sentenceType;
+    document.getElementById('crimeIntent').value = s.crimeIntent;
+    document.getElementById('valY').value = String(s.valY);
+    document.getElementById('valM').value = String(s.valM);
+    document.getElementById('valD').value = String(s.valD);
+    
+    this.setDT('crimeDateGroup', s.crimeDate);
+    
+    document.getElementById('recidivism').value = s.recidivism;
+    document.getElementById('priorSentenceGroup').style.display = (s.recidivism === 'once') ? 'flex' : 'none';
+    document.getElementById('priorY').value = String(s.priorY || 0);
+    document.getElementById('priorM').value = String(s.priorM || 0);
+    document.getElementById('priorD').value = String(s.priorD || 0);
+
+    document.getElementById('manualMahsupDays').value = String(s.manualMahsupDays || 0);
+    document.getElementById('mahsupContainer').innerHTML = '';
+    
+    (s.mahsupData || []).forEach(m => {
+        this.addRangeRow('mahsupContainer', 'accent', m.start, m.end);
+    });
+
+    document.querySelectorAll('.crime-cb').forEach(cb => {
+        cb.checked = !!s.flags?.[cb.id];
+    });
+
+    document.getElementById('terror_pisman_group').style.display = s.flags?.['crime_terror'] ? 'flex' : 'none';
+    
+    if (!s.flags?.['crime_terror']) {
+        document.getElementById('terror_pisman').checked = false;
+    }
+
+    document.getElementById('panel1Title').innerText = `Adım 1: Karar ve Süre Bilgileri (Düzenleniyor: Ceza ${index + 1})`;
+    this.goToStep(1);
+  },
+
+  deleteSentence(index) {
+    this.sentences.splice(index, 1);
+    this.renderSummary();
+    if (this.sentences.length === 0) {
+        this.prepareNewSentence();
+    }
+  },
+
+  renderSummary() {
+    const container = document.getElementById('summaryList'); 
+    container.innerHTML = '';
+    
+    this.sentences.forEach((s, idx) => {
+      let yatar;
+      if (s.sentenceType === 'muebbet') {
+          yatar = 'Müebbet Hapis';
+      } else if (s.sentenceType === 'agirlastirilmis') {
+          yatar = 'Ağırlaştırılmış Müebbet';
+      } else {
+          yatar = this.formatDays((s.valY*365) + (s.valM*30) + s.valD);
+      }
+
+      const kural = s.recidivism !== 'none' ? ' (Tekerrürlü)' : '';
+      const card = document.createElement('div'); 
+      card.className = 'summary-card';
+      
+      card.innerHTML = `
+        <div class="summary-card-content">
+          <h4>${idx + 1}. Ceza Dosyası ${kural}</h4>
+          <p>Süre: <b>${yatar}</b> | Mahsup: <b>${s.mahsupDays} Gün</b></p>
+        </div>
+        <div class="summary-card-actions">
+          <button type="button" class="btn btn-secondary" style="padding: 8px 15px;" onclick="window.App.editSentence(${idx})">✎ Düzelt</button>
+          <button type="button" class="btn btn-danger" onclick="window.App.deleteSentence(${idx})">🗑️ Sil</button>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  },
+
+  getGlobalData() {
+    let priorDsDays = Math.max(0, parseInt(document.getElementById('priorDsDays').value) || 0);
+
+    document.querySelectorAll('#priorDsContainer .mahsup-row').forEach(row => {
+      const s = this.getDTFromElement(row.querySelector('.m-start'));
+      const e = this.getDTFromElement(row.querySelector('.m-end'));
+      if (s && e) {
+        const dateS = new Date(s);
+        const dateE = new Date(e);
+        if (!isNaN(dateS) && !isNaN(dateE) && dateE >= dateS) {
+          let diff = Math.round((dateE - dateS) / (1000 * 60 * 60 * 24));
+          if (diff === 0) diff = 1;
+          priorDsDays += diff;
+        }
+      }
+    });
+
+    return {
+      crime_multiple: document.getElementById('crime_multiple').checked,
+      entryDate: this.getDT('entryDateGroup'),
+      birthDate: this.getDT('birthDateGroup'),
+      gender: document.getElementById('gender').value,
+      isPregnant: document.getElementById('isPregnant').checked,
+      gaveBirth: document.getElementById('gaveBirth').checked,
+      childBirthDate: this.getDT('childBirthDateGroup'),
+      hasSevereIllness: document.getElementById('hasSevereIllness').checked,
+      calledBySummons: document.getElementById('calledBySummons').checked,
+      priorDsDays: priorDsDays
+    };
+  },
+
+  prepareNewSentence() {
+    this.editingIndex = -1;
+    document.getElementById('sentenceType').value = 'sureli';
+    document.getElementById('crimeIntent').value = 'intentional';
+    document.getElementById('valY').value = '0'; 
+    document.getElementById('valM').value = '0'; 
+    document.getElementById('valD').value = '0';
+    
+    this.setDT('crimeDateGroup', '');
+    
+    document.getElementById('recidivism').value = 'none';
+    document.getElementById('priorY').value = '0'; 
+    document.getElementById('priorM').value = '0'; 
+    document.getElementById('priorD').value = '0';
+    document.getElementById('priorSentenceGroup').style.display = 'none';
+    
+    document.getElementById('manualMahsupDays').value = '0';
+    document.getElementById('mahsupContainer').innerHTML = '';
+    
+    document.querySelectorAll('.crime-cb').forEach(cb => {
+        cb.checked = false;
+    });
+    
+    document.getElementById('terror_pisman_group').style.display = 'none'; 
+    document.getElementById('terror_pisman').checked = false;
+    
+    document.getElementById('panel1Title').innerText = `Adım 1: Karar ve Süre Bilgileri (Ceza ${this.sentences.length + 1})`;
+    this.goToStep(1);
+  },
+
+  resetAll() {
+    this.currentStep = 1; 
+    this.sentences = []; 
+    this.editingIndex = -1; 
+    this.currentOptionsData = []; 
+    this.displayedOptionsData = []; 
+    this.selectedOptionId = null;
+
+    this.feedbackVal = null;
+    const fbExp = document.getElementById('feedbackExplanation');
+    const fbThanks = document.getElementById('feedbackThanks');
+    if (fbExp) fbExp.style.display = 'none';
+    if (fbThanks) fbThanks.style.display = 'none';
+    const btnCorr = document.getElementById('btnCorrect');
+    const btnIncorr = document.getElementById('btnIncorrect');
+    if (btnCorr) btnCorr.classList.remove('active');
+    if (btnIncorr) btnIncorr.classList.remove('active');
+    const fbText = document.getElementById('feedbackText');
+    if (fbText) fbText.value = '';
+
+    document.getElementById('summaryList').innerHTML = ''; 
+    document.getElementById('resOptions').innerHTML = ''; 
+    document.getElementById('calcLogicNotes').innerHTML = '';
+    
+    const resSummaryBoard = document.getElementById('resSummaryBoard');
+    if(resSummaryBoard) resSummaryBoard.innerHTML = '';
+
+    this.setText('resTotalSentence', '--');
+    this.setText('resKapali', '--'); 
+    this.setText('resKapaliDate', 'Tahliye/Açığa Geçiş: --');
+    
+    this.setText('resAcik', '--'); 
+    this.setText('resAcikSub', 'Açıkta Geçirilecek Süre');
+    
+    this.setText('resDSVal', '--'); 
+    
+    this.setText('resKS', '--'); 
+    this.setText('resHET', '--');
+
+    document.getElementById('crime_multiple').checked = false;
+    this.setDT('birthDateGroup', '');
+    this.setDT('entryDateGroup', '');
+    this.setDT('childBirthDateGroup', '');
+    
+    document.getElementById('gender').value = 'male';
+    document.getElementById('isPregnant').checked = false; 
+    document.getElementById('gaveBirth').checked = false;
+    document.getElementById('hasSevereIllness').checked = false; 
+    document.getElementById('calledBySummons').checked = false;
+    document.getElementById('birthDateUI').style.display = 'none';
+    
+    document.getElementById('priorDsDays').value = '0';
+    document.getElementById('priorDsContainer').innerHTML = '';
+
+    ['petMakam','petConvictName','petConvictTC','petCourtName','petFileNo','petLawyerName','petCustomReason','petAttachments'].forEach(id => {
+        document.getElementById(id).value = '';
+    });
+
+    this.closePetitionModal(); 
+    this.closePrintView();
+
+    document.querySelectorAll('.step-bubble').forEach(b => { 
+        b.classList.remove('active', 'completed'); 
+    });
+    document.querySelector('.step-bubble[data-step="1"]').classList.add('active');
+
+    for (let i=1; i<=6; i++) { 
+        const p = document.getElementById('panel'+i); 
+        if (p) {
+            p.classList.toggle('active', i===1); 
+        }
+    }
+
+    document.getElementById('btnPrev').disabled = true; 
+    document.getElementById('btnNext').innerText = 'İleri';
+
+    document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.remove('active');
+    }); 
+    
+    document.querySelectorAll('.tab-content').forEach(c => {
+        c.classList.remove('active');
+    });
+
+    document.querySelector('.tab-btn[data-tab="tab_summary"]').classList.add('active'); 
+    document.getElementById('tab_summary').classList.add('active');
+
+    this.prepareNewSentence(); 
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  },
+
+  goToStep(step) {
+    for (let i=1; i<=6; i++) { 
+        const p = document.getElementById('panel'+i); 
+        if (p) {
+            p.classList.toggle('active', i===step); 
+        }
+    }
+
+    document.querySelectorAll('.step-bubble').forEach(b => {
+        b.classList.remove('active');
+    });
+
+    document.querySelector(`.step-bubble[data-step="${step}"]`).classList.add('active');
+
+    this.currentStep = step;
+
+    document.getElementById('btnPrev').disabled = (step === 1);
+    
+    const btnNext = document.getElementById('btnNext');
+    if (step === 4) {
+        btnNext.innerText = 'Onayla ve Listeye Ekle';
+    } else if (step === 5) {
+        btnNext.innerText = 'Tüm Cezalar Doğru - HESAPLA';
+    } else if (step === 6) {
+        btnNext.innerText = 'Baştan Başla';
+    } else {
+        btnNext.innerText = 'İleri';
+    }
+  },
+
+  runEngine() {
+    const globalData = this.getGlobalData();
+    const entryDate = globalData.entryDate ? new Date(globalData.entryDate) : new Date();
+    let notes = "<ul>";
+
+    let globalTotalDays = 0; 
+    let globalKsDays = 0; 
+    let globalMahsupDays = 0;
+
+    let isGlobalTerrorOrg = false; 
+    let isGlobalTheftDrug = false; 
+    let isGlobalSpouseInjury = false; 
+    let isGlobalSexualHeavy = false; 
+    let isGlobalSexualLight = false;
+    
+    let globalRecidivism = 'none'; 
+    let asalaAcigaGidemez = false; 
+    let terrorPismanOk = true;
+    
+    let allNegligent = true; 
+    let hasNegligentHomicide = false; 
+    let hasMuebbet = false; 
+    let hasAgirlastirilmis = false;
+
+    notes += `<li>⚖️ <b>Sistem Havuzu:</b> Sepetteki <b>${this.sentences.length}</b> adet cezanın yatar süreleri ayrı ayrı hesaplanıp havuzda toplanmıştır.</li>`;
+
+    this.sentences.forEach(s => {
+      let totalDays = 0;
+      
+      if (s.sentenceType === 'muebbet') { 
+          totalDays = 36 * 365; 
+          hasMuebbet = true; 
+      } else if (s.sentenceType === 'agirlastirilmis') { 
+          totalDays = 40 * 365; 
+          hasAgirlastirilmis = true; 
+          asalaAcigaGidemez = true; 
+      } else { 
+          totalDays = (s.valY * 365) + (s.valM * 30) + s.valD; 
+      }
+
+      globalTotalDays += totalDays;
+      globalMahsupDays += (s.mahsupDays || 0);
+
+      if (s.crimeIntent !== 'negligent' && s.crimeIntent !== 'negligentHomicide') {
+          allNegligent = false;
+      }
+      
+      if (s.crimeIntent === 'negligentHomicide') {
+          hasNegligentHomicide = true;
+      }
+
+      let crimeAge = null;
+      if (globalData.birthDate && s.crimeDate) {
+        const b = new Date(globalData.birthDate);
+        const c = new Date(s.crimeDate);
+        if (!isNaN(b) && !isNaN(c)) {
+          let age = c.getFullYear() - b.getFullYear();
+          const m = c.getMonth() - b.getMonth();
+          if (m < 0 || (m === 0 && c.getDate() < b.getDate())) {
+              age--;
+          }
+          crimeAge = age;
+        }
+      }
+      const isJuvenile = (crimeAge !== null && crimeAge < 18);
+
+      let baseRatio = 1/2;
+      
+      if (s.flags.crime_81_82_83 || s.flags.crime_87_94_96 || s.flags.crime_132_138 || s.flags.crime_102_1_104_1_105 || s.flags.crime_326_339 || s.flags.crime_220) {
+        baseRatio = Math.max(baseRatio, 2/3);
+      }
+
+      const law6545Date = new Date('2014-06-28');
+      const isBefore6545 = s.crimeDate && new Date(s.crimeDate) < law6545Date;
+
+      if (s.flags.crime_188 || s.flags.crime_102_2_103_104_2_3) {
+        if (isBefore6545) {
+          baseRatio = Math.max(baseRatio, 2/3);
+          notes += `<li>⚖️ <b>Aleyhe Kanun Geriye Yürümez (6545 S.K. Öncesi):</b> Uyuşturucu veya Nitelikli Cinsel Suç tarihi 28.06.2014 öncesi olduğu için infaz oranı 3/4 yerine lehe yorumla <b>2/3</b> olarak uygulanmıştır.</li>`;
+        } else {
+          if (isJuvenile) {
+              baseRatio = Math.max(baseRatio, 2/3);
+          } else {
+              baseRatio = Math.max(baseRatio, 3/4);
+          }
+        }
+      }
+
+      if (s.flags.crime_terror) {
+        if (isJuvenile) {
+            baseRatio = Math.max(baseRatio, 2/3);
+        } else {
+            baseRatio = Math.max(baseRatio, 3/4);
+        }
+      }
+
+      let ksDays = 0;
+      
+      if (s.sentenceType === 'sureli') {
+        ksDays = Math.floor(totalDays * baseRatio);
+        
+        if (s.recidivism === 'once') {
+          const tekerrurRatio = Math.max(baseRatio, 2/3);
+          const tekerrurKs = Math.floor(totalDays * tekerrurRatio);
+          const added = tekerrurKs - ksDays;
+          const priorDays = (s.priorY * 365) + (s.priorM * 30) + s.priorD;
+          
+          if (added > 0 && priorDays > 0 && added > priorDays) {
+              ksDays += priorDays;
+          } else {
+              ksDays = tekerrurKs;
+          }
+        }
+        
+        if (s.recidivism === 'twice') { 
+            ksDays = Math.floor(totalDays * Math.max(baseRatio, 3/4)); 
+        }
+        
+      } else if (s.sentenceType === 'muebbet') {
+        ksDays = (baseRatio >= 2/3) ? (30 * 365) : (24 * 365); 
+        if (s.recidivism !== 'none') {
+            ksDays = 33 * 365;
+        }
+      } else if (s.sentenceType === 'agirlastirilmis') {
+        ksDays = (baseRatio >= 2/3) ? (36 * 365) : (30 * 365); 
+        if (s.recidivism !== 'none') {
+            ksDays = 39 * 365;
+        }
+      }
+
+      if (s.recidivism === 'twice') {
+          globalRecidivism = 'twice'; 
+      } else if (s.recidivism === 'once' && globalRecidivism !== 'twice') {
+          globalRecidivism = 'once';
+      }
+
+      if (globalData.birthDate) {
+        const birth = new Date(globalData.birthDate);
+        if (!isNaN(birth)) {
+          const turn15 = new Date(birth.getFullYear()+15, birth.getMonth(), birth.getDate());
+          const turn18 = new Date(birth.getFullYear()+18, birth.getMonth(), birth.getDate());
+
+          if (entryDate < turn18) {
+            let tempKsDate = this.addDays(entryDate, ksDays);
+            let overlap15End = (turn15 < tempKsDate) ? turn15 : tempKsDate;
+            let overlap18End = (turn18 < tempKsDate) ? turn18 : tempKsDate;
+
+            if (s.crimeDate && new Date(s.crimeDate) <= new Date(MEVZUAT.tarihler.gecici6)) {
+              if (entryDate < overlap15End) {
+                let daysUnder15 = Math.floor((overlap15End - entryDate) / (1000 * 60 * 60 * 24));
+                let bonus15 = Math.min(ksDays, daysUnder15 * 2);
+                if (bonus15 > 0) { 
+                    ksDays -= bonus15; 
+                    notes += `<li>👦 <b>Geçici 6/4 (15 Yaş Altı):</b> Geçirilen ${daysUnder15} gün x 3 sayıldı, KS ${bonus15} gün öne çekildi.</li>`; 
+                }
+              }
+              let start18 = (entryDate > turn15) ? entryDate : turn15;
+              if (start18 < overlap18End) {
+                let days15to18 = Math.floor((overlap18End - start18) / (1000 * 60 * 60 * 24));
+                let bonus18 = Math.min(ksDays, days15to18 * 1);
+                if (bonus18 > 0) { 
+                    ksDays -= bonus18; 
+                    notes += `<li>👦 <b>Geçici 6/4 (15-18 Yaş):</b> Geçirilen ${days15to18} gün x 2 sayıldı, KS ${bonus18} gün öne çekildi.</li>`; 
+                }
+              }
+            } else {
+              if (entryDate < overlap15End) {
+                let daysUnder15 = Math.floor((overlap15End - entryDate) / (1000 * 60 * 60 * 24));
+                let bonus15 = Math.min(ksDays, daysUnder15 * 1);
+                if (bonus15 > 0) { 
+                    ksDays -= bonus15; 
+                    notes += `<li>👦 <b>m.107/5 (15 Yaş Altı):</b> Geçirilen ${daysUnder15} gün x 2 sayıldı, KS ${bonus15} gün öne çekildi.</li>`; 
+                }
+              }
+            }
+          }
+        }
+      }
+
+      globalKsDays += ksDays;
+
+      if (s.flags.crime_terror || s.flags.crime_220) {
+          isGlobalTerrorOrg = true;
+      }
+      
+      if (s.flags.crime_terror && !s.flags.terror_pisman) {
+          terrorPismanOk = false;
+      }
+
+      if (s.flags.crime_188 || s.flags.crime_theft) {
+          isGlobalTheftDrug = true;
+      }
+      
+      if (s.flags.crime_102_2_103_104_2_3) {
+          isGlobalSexualHeavy = true;
+      }
+      
+      if (s.flags.crime_102_1_104_1_105) {
+          isGlobalSexualLight = true;
+      }
+      
+      if (s.flags.crime_spouse_injury || s.flags.crime_81_82_83) {
+          isGlobalSpouseInjury = true;
+      }
+
+      if (s.flags.open_prison_ban) {
+          asalaAcigaGidemez = true;
+      }
+    });
+
+    this.setText('resTotalSentence', this.formatDays(globalTotalDays));
+
+    let summaryHtml = `
+      <div style="padding: 20px; background: #fff; border: 2px solid var(--border); border-left: 6px solid var(--primary); border-radius: var(--radius); margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+        <h4 style="margin: 0 0 15px 0; color: var(--primary); border-bottom: 2px solid var(--light); padding-bottom: 10px; font-size: 1.1rem;">📋 İnfaz Bilgi Özeti (Kontrol Fişi)</h4>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; font-size: 0.9rem; margin-bottom: 20px;">
+            <div style="background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px dashed var(--border);">
+              <span style="color: #64748b; font-size: 0.8rem; text-transform: uppercase; font-weight: bold;">İnfaza Başlama Tarihi</span><br>
+              <span style="font-size: 1.1rem; font-weight: 900; color: var(--primary);">${this.formatDate(entryDate)}</span>
+            </div>
+            <div style="background: #f0fdf4; padding: 12px; border-radius: 8px; border: 1px dashed #bbf7d0;">
+              <span style="color: #166534; font-size: 0.8rem; text-transform: uppercase; font-weight: bold;">Toplam Mahsup (Tutukluluk)</span><br>
+              <span style="font-size: 1.1rem; font-weight: 900; color: #166534;">${globalMahsupDays} Gün</span>
+            </div>
+            <div style="background: #faf5ff; padding: 12px; border-radius: 8px; border: 1px dashed #e9d5ff;">
+              <span style="color: #6b21a8; font-size: 0.8rem; text-transform: uppercase; font-weight: bold;">Önceki Denetim (Prior DS)</span><br>
+              <span style="font-size: 1.1rem; font-weight: 900; color: #6b21a8;">${globalData.priorDsDays} Gün</span>
             </div>
         </div>
-        <button id="start-game-button" class="intro-line intro-line-4">Oyuna Başla</button>
-    </div>
-
-    <div class="game-container">
-        <div id="background-effect" class="paused-animation"></div>
-        <div id="dino"></div>
-        <div id="obstacle" class="paused-animation"></div>
-        <div id="boss-alani"></div>
-        <div id="particle-container"></div>
-        <div id="notification-area"></div>
         
-        <div id="boss-action-text" class="hidden"></div>
-    </div>
-    
-    <div id="game-ui" style="visibility: hidden;">
-        <div id="oyun-bilgisi">
-            <span>Bakiye: 22500.00 TL</span>
-            <span id="gun-sayaci"> | Kalan Gün: 30</span>
-        </div>
-        <p>Zıplamak için Ekrana DOKUN veya SPACE Tuşuna Bas</p>
-    </div>
-    
-    <button id="restart-button" style="display: none;">Yeniden Başlat</button>
+        <h5 style="margin: 0 0 10px 0; color: var(--secondary); font-size: 0.9rem;">Cezaların Detayları</h5>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+    `;
 
-    <script src="script.js"></script>
+    this.sentences.forEach((s, idx) => {
+      let yatarText = (s.sentenceType === 'muebbet') ? 'Müebbet' :
+                    (s.sentenceType === 'agirlastirilmis') ? 'Ağırlaştırılmış Müebbet' :
+                    this.formatDays((s.valY*365) + (s.valM*30) + s.valD);
+      let sDate = s.crimeDate ? this.formatDate(new Date(s.crimeDate)) : "Belirtilmedi";
+      let recText = s.recidivism !== 'none' ? ' <span style="color:var(--danger); font-size:0.75rem;">(Tekerrürlü)</span>' : '';
+
+      summaryHtml += `
+          <div style="background: #f8fafc; padding: 10px 15px; border-radius: 8px; border: 1px solid var(--light); font-size: 0.85rem; display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center;">
+              <div style="flex: 1; min-width: 200px;">
+                <b>${idx + 1}. Ceza:</b> <span style="font-weight: 800; color: var(--primary);">${yatarText}</span>${recText}
+                <br>
+                <span style="color: #64748b; font-size: 0.8rem; margin-top: 4px; display: inline-block;">Suç Tarihi: <b style="color: var(--secondary);">${sDate}</b></span>
+              </div>
+              <div><span style="background: #e2e8f0; color: #334155; padding: 4px 10px; border-radius: 6px; font-weight: 800; font-size: 0.8rem;">İç Mahsup: ${s.mahsupDays || 0} Gün</span></div>
+          </div>
+      `;
+    });
+
+    summaryHtml += `</div></div>`;
+    document.getElementById('resSummaryBoard').innerHTML = summaryHtml;
+
+    if (globalData.crime_multiple) {
+      const capYears = (isGlobalSexualHeavy || isGlobalSexualLight || globalRecidivism !== 'none' || isGlobalTerrorOrg) ? 32 : 28;
+      if (globalKsDays > capYears * 365) {
+        globalKsDays = capYears * 365;
+        notes += `<li>🛑 <b>Tavan İnfaz Sınırı:</b> Toplam KS süresi <b>${capYears} yıl</b> tavanına göre sınırlandı.</li>`;
+      }
+    }
+
+    if (globalMahsupDays > 0) {
+        notes += `<li>➖ <b>Mahsup:</b> Toplam <b>${globalMahsupDays} gün</b> tutukluluk KS/HET hesaplarından düşüldü.</li>`;
+    }
+
+    if(globalData.priorDsDays > 0) {
+        notes += `<li>📉 <b>Eski Denetim Mahsubu (m.105/A-9):</b> Geçmişte infaz yanmadan önce denetimde geçirilen <b>${globalData.priorDsDays} gün</b>, doğrudan infaz edilmiş sayılarak HET ve KS takvimini öne çekmiştir.</li>`;
+    }
+
+    const effectiveKsDays = Math.max(0, globalKsDays - globalMahsupDays - globalData.priorDsDays);
+    const effectiveHetDays = Math.max(0, globalTotalDays - globalMahsupDays - globalData.priorDsDays);
+
+    let kapaliDays = 0; 
+    let acikDays = 0;
+    
+    if (isGlobalTerrorOrg && !terrorPismanOk) {
+        asalaAcigaGidemez = true;
+    }
+
+    let standardDs = 365; 
+    let dsNote = "";
+    let crimeDateForDS = null; 
+    let isGlobalG6_Exception = false; 
+    let isGlobalG10_Exception = false;
+
+    this.sentences.forEach(s => {
+      if (s.crimeDate) {
+        if (!crimeDateForDS || new Date(s.crimeDate) > new Date(crimeDateForDS)) {
+            crimeDateForDS = s.crimeDate;
+        }
+      }
+      if (s.flags.crime_81_82_83 || s.flags.crime_87_94_96 || s.flags.crime_132_138 || s.flags.crime_102_1_104_1_105 || s.flags.crime_102_2_103_104_2_3 || s.flags.crime_188 || s.flags.crime_326_339 || s.flags.crime_terror) {
+        isGlobalG6_Exception = true;
+      }
+      if (s.flags.crime_81_82_83 || s.flags.crime_102_1_104_1_105 || s.flags.crime_102_2_103_104_2_3 || s.flags.crime_326_339 || s.flags.crime_terror || s.flags.crime_220 || s.flags.crime_earthquake) {
+        isGlobalG10_Exception = true;
+      }
+    });
+
+    let ozelDs = 0; 
+    let ozelDsNote = "";
+    
+    if (globalData.hasSevereIllness) {
+      ozelDs = 3 * 365; 
+      ozelDsNote = "<li>🕊️ <b>Özel DS (m.105/A-3-b):</b> Ağır hastalık sebebiyle DS süresi <b>3 Yıl</b> hesaplanmış olup lehe olan süre tatbik edilir.</li>";
+    } else if (globalData.gender === 'female' && globalData.gaveBirth && globalData.childBirthDate) {
+      const childAgeMonths = this.calculateDiffMonths(globalData.childBirthDate);
+      if (childAgeMonths >= 0 && childAgeMonths <= 72) {
+        ozelDs = 2 * 365; 
+        ozelDsNote = "<li>🕊️ <b>Özel DS (m.105/A-3-a):</b> 0-6 yaş çocuğu bulunan kadın hükümlü DS süresi <b>2 Yıl</b> hesaplanmış olup lehe olan süre tatbik edilir.</li>";
+      }
+    }
+
+    let baseDs = Math.max(standardDs, ozelDs);
+    let isG6Applied = false;
+
+    if (crimeDateForDS && new Date(crimeDateForDS) <= new Date(MEVZUAT.tarihler.gecici6)) {
+      if (!isGlobalG6_Exception) {
+        standardDs = 3 * 365;
+        let ageAtEntry = globalData.birthDate ? this.calculateAge(globalData.birthDate) : 0;
+        if (ageAtEntry >= 70 || (globalData.gender === 'female' && globalData.gaveBirth)) {
+            standardDs = 4 * 365;
+        }
+        dsNote += `<li>📅 <b>Geçici Madde 6:</b> 30/03/2020 öncesi suç sebebiyle DS süresi avantajlı (<b>${standardDs/365} Yıl</b>) uygulandı.</li>`;
+        isG6Applied = true;
+      }
+    }
+
+    let applyG10 = false;
+    let isG10EntryDate = entryDate && entryDate <= new Date(MEVZUAT.tarihler.gecici10);
+    
+    if (crimeDateForDS && new Date(crimeDateForDS) <= new Date(MEVZUAT.tarihler.gecici10)) {
+      if (isG10EntryDate) {
+          applyG10 = true; 
+      } else if (!isGlobalG10_Exception) {
+          applyG10 = true; 
+      }
+
+      if (applyG10 && !asalaAcigaGidemez) {
+        standardDs += 3 * 365; 
+        if (isG10EntryDate && isGlobalG10_Exception) {
+            dsNote += `<li>✅ <b>Geçici 10 (Kazanılmış Hak):</b> 31/07/2023 itibarıyla ceza infaz kurumunda bulunulduğu için suç türü istisnasına bakılmaksızın <b>+3 Yıl</b> eklenmiştir. Toplam DS: <b>${standardDs/365} Yıl</b>.</li>`;
+        } else {
+            dsNote += `<li>📅 <b>Geçici Madde 10:</b> İlgili tarih koşulları sağlandığından denetim süresine <b>+3 Yıl</b> ek avantaj sağlanmıştır. Toplam DS: <b>${standardDs/365} Yıl</b>.</li>`;
+        }
+      } else if (isGlobalG10_Exception) {
+        dsNote += `<li>🛑 <b>Geçici 10 İstisnası:</b> İşlenen suç kanunda sayılan istisnalar arasında olduğu için Geçici 10'daki <b>+3 Yıl</b> indiriminden <u>faydalanamaz.</u></li>`;
+      }
+    }
+
+    if (ozelDs > standardDs) { 
+        standardDs = ozelDs; 
+        dsNote += ozelDsNote; 
+    }
+
+    const dsKalanSureDays = asalaAcigaGidemez ? 0 : Math.max(0, standardDs - globalData.priorDsDays);
+
+    let isDirectOpen = false;
+    if (!asalaAcigaGidemez) {
+      const limitDirectOpen = allNegligent ? 5 : 3;
+      if (!isGlobalTerrorOrg && !isGlobalSexualHeavy && !isGlobalSexualLight && globalRecidivism !== 'twice') {
+        if ((globalTotalDays / 365) <= limitDirectOpen) {
+            isDirectOpen = true;
+        }
+      }
+
+      if (isDirectOpen) {
+        notes += `<li>🔓 <b>Doğrudan Açık:</b> Kapalı süre işletilmedi.</li>`; 
+        kapaliDays = 0;
+      } else {
+        let stdKapaliDays = 0;
+        if (hasMuebbet || hasAgirlastirilmis) {
+            stdKapaliDays = Math.max(0, globalKsDays - (5 * 365));
+        } else {
+          if ((globalTotalDays / 365) < 10) {
+              stdKapaliDays = 30; 
+          } else {
+              stdKapaliDays = Math.floor(globalTotalDays * 1/10);
+          }
+        }
+
+        let kalanSureLimiti = 7 * 365;
+        if (isGlobalTheftDrug) {
+            kalanSureLimiti = 5 * 365;
+        }
+        if (isGlobalSexualHeavy || isGlobalSpouseInjury) {
+            kalanSureLimiti = 3 * 365;
+        }
+        if (isGlobalTerrorOrg && terrorPismanOk) {
+            kalanSureLimiti = 1 * 365;
+        }
+
+        kapaliDays = Math.max(stdKapaliDays, globalKsDays - kalanSureLimiti);
+        notes += `<li>⚖️ <b>Kapalıdan Açığa:</b> (10 yıl altı 1 ay / üstü 1/10) ve kalan süre limitine göre hesaplandı.</li>`;
+      }
+    } else {
+      kapaliDays = effectiveKsDays; 
+      notes += `<li>🚨 <b>Açığa Ayrılma Engeli:</b> Tüm KS süresi kapalıda infaz edilir.</li>`;
+    }
+
+    kapaliDays = Math.max(0, kapaliDays - globalMahsupDays);
+
+    if (isG6Applied && effectiveKsDays <= standardDs && kapaliDays > 0) {
+        kapaliDays = 0; 
+        notes += `<li>🕊️ <b>Geçici 6/3 İndirimi:</b> Şartlar denetime elverişli (KS süresi, DS süresini karşılıyor) olduğundan kapalı cezaevinde 1 ay yatma şartı kaldırıldı.</li>`;
+    }
+
+    let yuzde10_aktif = false;
+    this.sentences.forEach(s => { 
+        if (s.crimeDate && new Date(s.crimeDate) >= new Date(MEVZUAT.tarihler.yuzde10_kural)) {
+            yuzde10_aktif = true; 
+        }
+    });
+
+    let yuzde10Kural = 0;
+    if (!asalaAcigaGidemez && yuzde10_aktif) {
+      yuzde10Kural = Math.max(5, Math.floor(effectiveKsDays * 0.1));
+      notes += `<li>⚖️ <b>%10 Kuralı (7550 S.K):</b> KS'nin 1/10'u olan (${yuzde10Kural} gün) ceza infaz kurumunda (açık/kapalı gözetilmeksizin) geçirilmelidir.</li>`;
+    }
+
+    let g10ZorunluAcik = 0;
+    let isAfterG6 = crimeDateForDS && new Date(crimeDateForDS) > new Date(MEVZUAT.tarihler.gecici6);
+    
+    if (applyG10 && isAfterG6 && effectiveKsDays > baseDs && !asalaAcigaGidemez) {
+        g10ZorunluAcik = 90; 
+        notes += `<li>📅 <b>Geçici 10 Şartı:</b> Suç tarihi 30/03/2020 sonrası olduğu için Geçici 10 gereği en az <b>3 Ay (90 Gün)</b> açık cezaevinde kalınması zorunludur.</li>`;
+    } else if (applyG10 && !isAfterG6 && effectiveKsDays > baseDs && !asalaAcigaGidemez) {
+        notes += `<li>📅 <b>Geçici 10 İstisnası:</b> Suç tarihi 30/03/2020 öncesi olduğu için Geçici 10'daki <b>3 ay açık cezaevi şartı uygulanmamıştır</b>.</li>`;
+    }
+
+    if (!asalaAcigaGidemez && standardDs > 365) {
+        notes += dsNote;
+    }
+
+    let actualYatarDaysBeforeDs = Math.max(0, effectiveKsDays - dsKalanSureDays);
+    actualYatarDaysBeforeDs = Math.max(actualYatarDaysBeforeDs, kapaliDays + g10ZorunluAcik, yuzde10Kural, kapaliDays);
+    actualYatarDaysBeforeDs = Math.min(actualYatarDaysBeforeDs, effectiveKsDays);
+    
+    kapaliDays = Math.min(kapaliDays, actualYatarDaysBeforeDs);
+    acikDays = Math.max(0, actualYatarDaysBeforeDs - kapaliDays);
+
+    notes += "</ul>";
+
+    this.setText('resKapali', this.formatDays(kapaliDays));
+    this.setText('resKapaliDate', `Açığa Geçiş / Tahliye: ${this.formatDate(this.addDays(entryDate, kapaliDays))}`);
+    this.setText('resAcik', this.formatDays(acikDays));
+    this.setText('resDSVal', this.formatDate(this.addDays(entryDate, actualYatarDaysBeforeDs)));
+    this.setText('resKS', this.formatDate(this.addDays(entryDate, effectiveKsDays)));
+    this.setText('resHET', this.formatDate(this.addDays(entryDate, effectiveHetDays)));
+
+    document.getElementById('calcLogicNotes').innerHTML = notes;
+
+    this.renderAllOptions(
+      globalData, 
+      (globalTotalDays / 365), 
+      (isGlobalSexualHeavy || isGlobalSexualLight),
+      isGlobalTerrorOrg, 
+      globalRecidivism, 
+      allNegligent, 
+      hasNegligentHomicide, 
+      hasAgirlastirilmis
+    );
+  },
+
+  renderAllOptions(d, totalYears, isSexual, isTerrorOrg, globalRecidivism, allNegligent, hasNegligentHomicide, hasAgirlastirilmis) {
+    const container = document.getElementById('resOptions'); 
+    container.innerHTML = '';
+    
+    const age = this.calculateAge(d.birthDate);
+    const childAgeMonths = this.calculateDiffMonths(d.childBirthDate);
+    
+    const isExcludedM110_General = isTerrorOrg || isSexual;
+    const isExcludedM17 = isTerrorOrg || isSexual || globalRecidivism !== 'none';
+    
+    const options = []; 
+    const mk = (obj) => ({ id: (crypto?.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2)), ...obj });
+
+    options.push(mk({ 
+        title: "Akıl Hastalığı / Hayati Tehlike (m.16/1,2)", 
+        eligible: d.hasSevereIllness, 
+        shortReason: "Hükümlü iyileşinceye kadar infaz geriye bırakılır.", 
+        auth: "C. Başsavcılığı", 
+        subject: "m.16 Kapsamında Hastalık Sebebiyle İnfazın Ertelenmesi Talebi", 
+        eliteReason: "Müvekkilin mevcut ciddi sağlık sorunları ve raporlar muvacehesinde 5275 sayılı Kanun'un 16. maddesi kapsamında infazın ertelenmesi talebimizdir.", 
+        resultText: "hastalık süresince geri bırakılması ve ertelenmesi" 
+    }));
+
+    const isPregnancyEligible = (d.gender === 'female') && (d.isPregnant || (childAgeMonths >= 0 && childAgeMonths < MEVZUAT.m16.birthLimitMonths));
+    options.push(mk({ 
+        title: "Gebelik/Doğum Ertelemesi (m.16/4)", 
+        eligible: isPregnancyEligible, 
+        shortReason: "Gebelik veya doğumdan itibaren 1.5 yıl geçmemişse infaz durur.", 
+        auth: "C. Başsavcılığı", 
+        subject: "m.16/4 Uyarınca Gebelik/Doğum Sebebiyle İnfazın Ertelenmesi Talebi", 
+        eliteReason: "Müvekkilin gebelik/doğum durumu muvacehesinde 5275 sayılı Kanun'un 16/4. maddesi gereği infazın ertelenmesi talebimizdir.", 
+        resultText: "gebelik/doğum sebebiyle kanuni süreler çerçevesinde ertelenmesi" 
+    }));
+
+    const m17Limit = allNegligent ? MEVZUAT.m17.limitTaksir : MEVZUAT.m17.limitKasten;
+    options.push(mk({ 
+        title: "Çağrı Üzerine Teslim ile Erteleme (m.17/1)", 
+        eligible: (!isExcludedM17 && d.calledBySummons && totalYears <= m17Limit && m17Limit > 0), 
+        shortReason: "Kasten 3y / Taksir 5y sınırı ve davetiye üzerine teslim.", 
+        auth: "C. Başsavcılığı", 
+        subject: "m.17/1 Uyarınca İnfazın Ertelenmesi Talebi", 
+        eliteReason: "Ceza miktarı ve çağrı üzerine teslim hali birlikte değerlendirildiğinde 5275 sayılı Kanun 17/1 kapsamında infazın ertelenmesi şartları oluşmuştur.", 
+        resultText: "çağrı üzerine teslim olunması hasebiyle ertelenmesi" 
+    }));
+
+    let v1_limit = allNegligent ? MEVZUAT.m110.v1_taksir : MEVZUAT.m110.v1_kasten; 
+    if (hasNegligentHomicide) {
+        v1_limit = 0;
+    }
+    
+    options.push(mk({ 
+        title: "Hafta Sonu / Gece İnfaz (m.110/1)", 
+        eligible: (!isExcludedM110_General && totalYears <= v1_limit && v1_limit > 0), 
+        shortReason: "Kasten 3y / Taksir 5y sınırı.", 
+        auth: "İnfaz Hâkimi", 
+        subject: "m.110/1 Kapsamında Hafta Sonu/Gece İnfaz Talebi", 
+        eliteReason: "Ceza miktarı ve suç vasfı itibarıyla 5275 sayılı Kanun 110/1'de düzenlenen hafta sonu/geceleyin infaz şartları oluşmuştur.", 
+        resultText: "hafta sonu / gece infaz usulüne göre yerine getirilmesi" 
+    }));
+
+    let v2_limit = 0; 
+    let v2_label = "";
+    if (age >= 80) { 
+        v2_limit = 6; 
+        v2_label = "80+ Yaş"; 
+    } else if (age >= 75) { 
+        v2_limit = 5; 
+        v2_label = "75+ Yaş"; 
+    } else if (age >= 70) { 
+        v2_limit = 4; 
+        v2_label = "70+ Yaş"; 
+    } else if (age >= 65) { 
+        v2_limit = 3; 
+        v2_label = "65+ Yaş"; 
+    } else if (d.gender === 'female' || age < 18) { 
+        v2_limit = 3; 
+        v2_label = "Kadın/Çocuk"; 
+    }
+
+    options.push(mk({ 
+        title: `Konutta İnfaz - ${v2_label} (m.110/2)`, 
+        eligible: (!isExcludedM110_General && v2_limit > 0 && totalYears <= v2_limit), 
+        shortReason: `Yaş/statü gereği m.110 sınırı ${v2_limit} yıldır.`, 
+        auth: "İnfaz Hâkimi", 
+        subject: "m.110/2 Kapsamında Konutta İnfaz Talebi", 
+        eliteReason: "Yaş/statü ve ceza süresi dikkate alındığında 5275 sayılı Kanun 110/2 kapsamında konutta infaz şartları oluşmuştur.", 
+        resultText: "konutta infaz usulüne göre çektirilmesi" 
+    }));
+
+    options.push(mk({ 
+        title: "Konutta İnfaz - Ağır Hastalık/Engellilik (m.110/3)", 
+        eligible: (d.hasSevereIllness && !hasAgirlastirilmis), 
+        shortReason: "Ağır hastalık sebebiyle ceza sınırı olmaksızın konutta infaz (Ağırlaştırılmış Müebbet hariç).", 
+        auth: "İnfaz Hâkimi", 
+        subject: "m.110/3 Kapsamında Konutta İnfaz Talebi", 
+        eliteReason: "Müvekkilin mevcut ağır hastalık/engellilik durumu ve hayatını yalnız idame ettiremeyeceğine dair raporları muvacehesinde, 5275 sayılı Kanun'un 110/3. maddesi gereği cezasının konutta çektirilmesi talebimizdir.", 
+        resultText: "konutta infaz usulüne göre çektirilmesi" 
+    }));
+
+    const isM110_4_Eligible = (d.gender === 'female' && childAgeMonths >= 6 && childAgeMonths < 18 && totalYears <= 5);
+    options.push(mk({ 
+        title: "Konutta İnfaz - Yeni Doğum (m.110/4)", 
+        eligible: isM110_4_Eligible, 
+        shortReason: "Doğumdan itibaren 6 ay geçen ve 1.5 yıl dolmamış 5 yıl ve altı cezalar.", 
+        auth: "İnfaz Hâkimi", 
+        subject: "m.110/4 Kapsamında Konutta İnfaz Talebi", 
+        eliteReason: "Müvekkilin doğum yapmış olması ve yasal 6 aylık sürenin geçmiş bulunması sebebiyle, 5275 sayılı Kanun'un 110/4. maddesinde aranan yasal şartlar oluşmuş olup cezasının konutta çektirilmesi talebimizdir.", 
+        resultText: "konutta infaz usulüne göre çektirilmesi" 
+    }));
+
+    this.currentOptionsData = options; 
+    this.displayedOptionsData = [...options].sort((a,b) => (b.eligible === a.eligible) ? 0 : (b.eligible ? 1 : -1));
+
+    this.displayedOptionsData.forEach(opt => {
+      const card = document.createElement('div'); 
+      card.className = `option-card ${opt.eligible ? 'eligible' : 'not-eligible'}`;
+      
+      const btnHtml = opt.eligible 
+        ? `<button type="button" class="btn-success" style="padding: 10px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold;" onclick="window.App.openPetitionModalById('${opt.id}')">📄 Dilekçe Oluştur</button>` 
+        : '';
+        
+      card.innerHTML = `
+        <span class="badge ${opt.eligible ? 'badge-success' : 'badge-danger'}">
+            ${opt.eligible ? 'UYGUNDUR' : 'ŞARTLAR OLUŞMADI'}
+        </span>
+        <strong>${opt.title}</strong>
+        <p style="font-size:0.85rem; margin:10px 0;">${opt.shortReason}</p>
+        <div class="auth-tag" style="margin-bottom: 15px;">Makam: ${opt.auth}</div>
+        ${btnHtml}
+      `;
+      container.appendChild(card);
+    });
+  },
+
+  openPetitionModalById(id) { 
+      this.selectedOptionId = id; 
+      document.getElementById('petitionModal').classList.add('active'); 
+      document.getElementById('printDateText').innerText = new Date().toLocaleDateString('tr-TR'); 
+  },
+
+  closePetitionModal() { 
+      document.getElementById('petitionModal').classList.remove('active'); 
+      this.selectedOptionId = null; 
+  },
+
+  generateAndPrintPetition() {
+    const opt = this.currentOptionsData.find(o => o.id === this.selectedOptionId); 
+    if (!opt) return;
+    
+    const v = (id) => document.getElementById(id).value;
+    
+    document.getElementById('printMakam').innerText = (v('petMakam') || "İLGİLİ MAKAM'A").toUpperCase();
+    document.getElementById('printConvict').innerText = `${v('petConvictName') || "[Hükümlü Adı Soyadı]"} (TC: ${v('petConvictTC') || "[TC Kimlik]"})`;
+    document.getElementById('printLawyer').innerText = v('petLawyerName') || "[Avukat Adı]";
+    document.getElementById('printSubject').innerText = opt.subject;
+    document.getElementById('printCourtText').innerText = v('petCourtName') || "[Mahkeme Adı]";
+    document.getElementById('printFileText').innerText = v('petFileNo') || "[Esas/Karar No]";
+    document.getElementById('printReasonText').innerText = opt.eliteReason;
+
+    const custom = v('petCustomReason');
+    if (custom.trim() !== '') { 
+        document.getElementById('printCustomReasonText').innerText = custom; 
+        document.getElementById('printCustomReasonContainer').style.display = 'block'; 
+        document.getElementById('printLastParaNum').innerText = '4'; 
+    } else { 
+        document.getElementById('printCustomReasonContainer').style.display = 'none'; 
+        document.getElementById('printLastParaNum').innerText = '3'; 
+    }
+
+    const att = v('petAttachments');
+    if (att.trim() !== '') { 
+        document.getElementById('printAttachmentsText').innerText = att; 
+        document.getElementById('printAttachmentsContainer').style.display = 'block'; 
+    } else { 
+        document.getElementById('printAttachmentsContainer').style.display = 'none'; 
+    }
+
+    document.getElementById('printResultText').innerText = opt.resultText; 
+    document.getElementById('printSignName').innerText = v('petLawyerName') || "[Avukat Adı]";
+
+    document.getElementById('mainUi').style.display = 'none'; 
+    document.getElementById('petitionModal').classList.remove('active'); 
+    document.getElementById('printArea').style.display = 'block';
+    
+    setTimeout(() => { 
+        try { 
+            window.print(); 
+        } catch(e) {} 
+    }, 250);
+  },
+
+  closePrintView() { 
+      document.getElementById('printArea').style.display = 'none'; 
+      const ui = document.getElementById('mainUi'); 
+      if (ui) ui.style.display = 'block'; 
+  },
+
+  printSummary() { 
+      document.body.classList.add('printing-summary'); 
+      window.print(); 
+      setTimeout(() => document.body.classList.remove('printing-summary'), 500); 
+  },
+
+  addDays(d, days) { 
+      const r = new Date(d); 
+      r.setDate(r.getDate() + days); 
+      return r; 
+  },
+
+  formatDate(d) { 
+      return d && !isNaN(d) ? d.toLocaleDateString('tr-TR') : "YOK"; 
+  },
+
+  formatDays(days) {
+    if (days <= 0) return "0 Gün"; 
+    
+    const y = Math.floor(days / 365);
+    const m = Math.floor((days % 365) / 30);
+    const dd = (days % 365) % 30;
+    
+    const out = []; 
+    if (y > 0) out.push(`${y} Yıl`); 
+    if (m > 0) out.push(`${m} Ay`); 
+    if (dd > 0) out.push(`${dd} Gün`); 
+    
+    return out.join(' ');
+  },
+
+  calculateAge(b) { 
+      if (!b) return 0; 
+      const bd = new Date(b); 
+      if (isNaN(bd)) return 0; 
+      return Math.floor((Date.now() - bd.getTime()) / 31557600000); 
+  },
+
+  calculateDiffMonths(d) { 
+      if (!d) return -1; 
+      const s = new Date(d); 
+      if (isNaN(s)) return -1; 
+      const e = new Date(); 
+      return (e.getFullYear() - s.getFullYear()) * 12 + (e.getMonth() - s.getMonth()); 
+  },
+
+  setText(id, t) { 
+      const el = document.getElementById(id); 
+      if (el) el.innerText = t; 
+  },
+
+  setFeedback(isCorrect) {
+    this.feedbackVal = isCorrect;
+    const exp = document.getElementById('feedbackExplanation');
+    const thanks = document.getElementById('feedbackThanks');
+    
+    document.getElementById('btnCorrect').classList.toggle('active', isCorrect);
+    document.getElementById('btnIncorrect').classList.toggle('active', !isCorrect);
+    
+    if(isCorrect) {
+      exp.style.display = 'none';
+      thanks.style.display = 'block';
+      setTimeout(() => thanks.style.display = 'none', 3000);
+    } else {
+      thanks.style.display = 'none';
+      exp.style.display = 'block';
+    }
+  },
+
+  // =========================================================================
+  // 3. ADIM: GERİ BİLDİRİM GÖNDERME FONKSİYONU DOĞRUDAN SENİN FIREBASE'E BAĞLANDI
+  // =========================================================================
+  async sendFeedback() {
+    const btn = document.getElementById('btnSendFeedback');
+    const originalText = btn.innerText;
+    btn.innerText = "Gönderiliyor, lütfen bekleyin...";
+    btn.disabled = true;
+
+    try {
+        const note = document.getElementById('feedbackText').value;
+        
+        // Gönderilecek verilerin paketi
+        const feedbackData = {
+            userNote: note || "Not girilmedi.",
+            isCorrect: this.feedbackVal,
+            sentences: this.sentences.map(s => ({
+                type: s.sentenceType,
+                y: s.valY, m: s.valM, d: s.valD,
+                crimeDate: s.crimeDate || null,
+                recidivism: s.recidivism,
+                mahsupDays: s.mahsupDays || 0,
+                flags: s.flags
+            })),
+            results: {
+                kapali: document.getElementById('resKapali').innerText,
+                acik: document.getElementById('resAcik').innerText,
+                ks: document.getElementById('resKS').innerText,
+                het: document.getElementById('resHET').innerText
+            },
+            timestamp: new Date().toISOString()
+        };
+
+        // Oturum aç ve doğrudan kendi "hata_raporlari" koleksiyonuna ekle
+        await signInAnonymously(auth);
+        
+        // Senin veritabanında "hata_raporlari" klasörü açılacak
+        const feedbacksRef = collection(db, 'hata_raporlari');
+        await addDoc(feedbacksRef, feedbackData);
+
+        // Başarı mesajı göster
+        document.getElementById('feedbackExplanation').style.display = 'none';
+        document.getElementById('feedbackThanks').style.display = 'block';
+        
+    } catch (error) {
+        console.error("Geri bildirim gönderilemedi:", error);
+        alert("Gönderim sırasında bağlantı hatası oluştu, lütfen daha sonra tekrar deneyin.");
+    } finally {
+        btn.innerText = originalText;
+        btn.disabled = false;
+    }
+  }
+};
+
+window.App.init();
+</script>
 </body>
 </html>
